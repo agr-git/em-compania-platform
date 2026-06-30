@@ -1,6 +1,70 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { ItemDetalle } from "@/features/quotes/queries";
 
+function unwrap<T>(v: T | T[] | null | undefined): T | null {
+  if (Array.isArray(v)) return v[0] ?? null;
+  return v ?? null;
+}
+
+export interface VendedorOption {
+  id: string;
+  nombre: string;
+}
+
+export async function getVendedores(): Promise<VendedorOption[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, nombre_completo")
+    .eq("rol", "vendedor")
+    .eq("activo", true)
+    .order("nombre_completo");
+  return (data ?? []).map((p) => ({ id: p.id as string, nombre: p.nombre_completo as string }));
+}
+
+export interface PedidoFila {
+  id: string;
+  estado: string;
+  wo_order_id: string | null;
+  total: number;
+  created_at: string;
+  cliente_nombre: string;
+  vendedor_nombre: string;
+}
+
+/** Todos los pedidos (recientes primero), opcionalmente filtrados por vendedor. Solo contable/admin (RLS). */
+export async function getPedidosContable(vendedorId?: string): Promise<PedidoFila[]> {
+  const supabase = await createSupabaseServerClient();
+  let query = supabase
+    .from("pedidos")
+    .select("id, estado, wo_order_id, total, created_at, cliente:clientes(nombre), vendedor:profiles(nombre_completo)")
+    .order("created_at", { ascending: false });
+  if (vendedorId) query = query.eq("vendedor_id", vendedorId);
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  type Raw = {
+    id: string;
+    estado: string;
+    wo_order_id: string | null;
+    total: number | string;
+    created_at: string;
+    cliente?: { nombre: string } | { nombre: string }[] | null;
+    vendedor?: { nombre_completo: string } | { nombre_completo: string }[] | null;
+  };
+
+  return ((data ?? []) as unknown as Raw[]).map((row) => ({
+    id: row.id,
+    estado: row.estado,
+    wo_order_id: row.wo_order_id ?? null,
+    total: Number(row.total),
+    created_at: row.created_at,
+    cliente_nombre: unwrap(row.cliente)?.nombre ?? "—",
+    vendedor_nombre: unwrap(row.vendedor)?.nombre_completo ?? "—",
+  }));
+}
+
 export interface PedidoDetalle {
   id: string;
   estado: string;
