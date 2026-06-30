@@ -1,3 +1,4 @@
+import { Brand } from "@/components/brand/logo";
 import { logout } from "@/features/auth/actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -20,7 +21,7 @@ export default async function VendedorLayout({ children }: { children: React.Rea
   return (
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-neutral-200 px-6 py-3 dark:border-neutral-800">
-        <span className="text-sm font-semibold tracking-tight">E.M. Compañía · Catálogo</span>
+        <Brand />
         <div className="flex items-center gap-4">
           <span className="text-xs text-neutral-500">{nombre}</span>
           <form action={logout}>
