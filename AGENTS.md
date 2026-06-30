@@ -7,6 +7,13 @@ Este es el **repo principal y source of truth** de la plataforma de cotización 
 **E.M. Compañía**, compartido por un equipo de AI builders. Lo que empujas, otro agente lo
 hereda: deja el árbol verde y la documentación al día.
 
+<!-- BEGIN:nextjs-agent-rules -->
+> ⚠️ **Next.js 16 — no es el Next.js que conoces.** Esta versión trae breaking changes:
+> APIs, convenciones y estructura pueden diferir de tus datos de entrenamiento. **Antes de
+> escribir código de Next, lee la guía relevante en `node_modules/next/dist/docs/`.** Atiende
+> los avisos de deprecación. (Stack fijado en `docs/STACK.md` + ADR-0003.)
+<!-- END:nextjs-agent-rules -->
+
 ## Orden de lectura (3 archivos, en este orden)
 1. **`CLAUDE.md`** — qué es el proyecto, los 3 roles, el stack y las **reglas no negociables**.
 2. **`docs/ENGINEERING-PRACTICES.md`** — CI/CD y el mapa **disparador → acción**: qué hacer

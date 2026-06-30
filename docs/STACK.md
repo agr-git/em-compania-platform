@@ -15,7 +15,7 @@ práctico.
 
 | Capa | Tecnología | Por qué |
 |------|------------|---------|
-| Framework | **Next.js 15** (App Router, RSC, Server Actions) | Fullstack en un repo, SSR para paneles rápidos, despliegue nativo en Vercel, ecosistema enorme, excelente para Claude Code |
+| Framework | **Next.js 16** (App Router, RSC, Server Actions) · ver ADR-0003 | Fullstack en un repo, SSR para paneles rápidos, despliegue nativo en Vercel, ecosistema enorme, excelente para Claude Code |
 | Lenguaje | **TypeScript** estricto | Tipos de extremo a extremo; menos bugs en datos contables |
 | UI | **Tailwind CSS + shadcn/ui** | Componentes accesibles, consistentes y rápidos de iterar |
 | Datos | **Supabase (Postgres)** | SQL real, relaciones, transacciones; ideal para pedidos/contabilidad |

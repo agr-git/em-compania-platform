@@ -32,7 +32,7 @@ de World Office** (ver `docs/WORLD-OFFICE-INTEGRATION.md`).
 
 ## 3. Stack (decidido — ver `docs/STACK.md` y ADR-0002)
 
-- **Framework:** Next.js 15 (App Router, RSC, Server Actions) + TypeScript estricto + React 19
+- **Framework:** Next.js 16 (App Router, RSC, Server Actions) + TypeScript estricto + React 19 · ver ADR-0003
 - **UI:** Tailwind CSS + shadcn/ui
 - **Datos/Auth/Realtime:** Supabase (Postgres + Auth + RLS + Realtime + Storage)
 - **Hosting:** Vercel (cuenta del cliente) + Supabase Cloud
