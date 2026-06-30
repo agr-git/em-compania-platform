@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { branding, brandCssVars } from "@/lib/branding";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "E.M. Compañía · Cotización y Pedidos",
-  description: "Plataforma interna de cotización y pedidos para E.M. Compañía S.A.S.",
+  title: `${branding.legalName} · ${branding.productName}`,
+  description: branding.tagline,
 };
 
 export default function RootLayout({
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      style={brandCssVars()}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
