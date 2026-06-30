@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { construirIdempotencyKey } from "@/core/domain/idempotency";
 import type { CrearPedidoWO, RenglonWO } from "@/core/ports/world-office.port";
@@ -148,4 +149,46 @@ export async function convertirEnPedido(cotizacionId: string) {
   });
 
   redirect(`/pedidos/${pedido.id}`);
+}
+
+/**
+ * Convierte un pedido en factura (lo ejecuta contabilidad). Orden obligatorio:
+ * contabilizar → facturar electrónicamente (la API rechaza facturar sin
+ * contabilizar: DOCUMENTO_NO_CONTABILIZADO). En el concurso lo simula el mock.
+ */
+export async function facturarPedido(pedidoId: string) {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: pedido } = await supabase
+    .from("pedidos")
+    .select("id, wo_order_id, estado")
+    .eq("id", pedidoId)
+    .maybeSingle();
+  if (!pedido || !pedido.wo_order_id) throw new Error("El pedido no está en World Office.");
+  if (pedido.estado === "facturado") {
+    revalidatePath("/contable");
+    return;
+  }
+
+  const { worldOffice } = getContainer();
+  await worldOffice.contabilizarDocumento(pedido.wo_order_id as string);
+  const factura = await worldOffice.facturarElectronico(pedido.wo_order_id as string);
+
+  // El contable puede UPDATE pedidos (RLS pedidos_contable_update).
+  const { error } = await supabase.from("pedidos").update({ estado: "facturado" }).eq("id", pedidoId);
+  if (error) throw error;
+
+  await supabase.from("audit_log").insert({
+    actor_id: user.id,
+    accion: "facturar",
+    entidad: "pedido",
+    entidad_id: pedidoId,
+    payload: { cufe: factura.cufe },
+  });
+
+  revalidatePath("/contable");
 }

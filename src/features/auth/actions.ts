@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { rutaPorRol } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const loginSchema = z.object({
@@ -28,7 +29,16 @@ export async function login(_prev: LoginState | null, formData: FormData): Promi
     return { error: "Credenciales incorrectas." };
   }
 
-  redirect("/catalogo");
+  // Ruteo por rol: vendedor → catálogo; contable/admin → panel de pedidos.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let destino = "/catalogo";
+  if (user) {
+    const { data: prof } = await supabase.from("profiles").select("rol").eq("id", user.id).single();
+    if (prof?.rol) destino = rutaPorRol(prof.rol as string);
+  }
+  redirect(destino);
 }
 
 export async function logout() {

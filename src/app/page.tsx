@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
+import { getCurrentProfile, rutaPorRol } from "@/lib/auth";
 
-// El acceso es por rol tras login; la raíz lleva al catálogo (el middleware
-// redirige a /login si no hay sesión).
-export default function Home() {
-  redirect("/catalogo");
+// La raíz enruta según el rol (el proxy ya redirige a /login si no hay sesión).
+export default async function Home() {
+  const perfil = await getCurrentProfile();
+  redirect(perfil ? rutaPorRol(perfil.rol) : "/login");
 }
