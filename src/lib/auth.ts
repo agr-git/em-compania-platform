@@ -33,5 +33,16 @@ export async function getCurrentProfile(): Promise<PerfilActual | null> {
 
 /** Ruta de inicio según el rol (RBAC de navegación). */
 export function rutaPorRol(rol: Rol | string): string {
-  return rol === "vendedor" ? "/catalogo" : "/contable";
+  if (rol === "vendedor") return "/catalogo";
+  if (rol === "administrador") return "/admin";
+  return "/contable";
+}
+
+/** Lanza si el usuario actual no es administrador. Usar al inicio de acciones admin. */
+export async function requireAdmin(): Promise<PerfilActual> {
+  const perfil = await getCurrentProfile();
+  if (!perfil || perfil.rol !== "administrador") {
+    throw new Error("Acceso denegado: requiere rol administrador.");
+  }
+  return perfil;
 }
