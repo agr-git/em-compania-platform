@@ -35,7 +35,15 @@ export async function login(_prev: LoginState | null, formData: FormData): Promi
   } = await supabase.auth.getUser();
   let destino = "/catalogo";
   if (user) {
-    const { data: prof } = await supabase.from("profiles").select("rol").eq("id", user.id).single();
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("rol, activo")
+      .eq("id", user.id)
+      .single();
+    if (prof && prof.activo === false) {
+      await supabase.auth.signOut();
+      return { error: "Usuario inactivo. Contacta al administrador." };
+    }
     if (prof?.rol) destino = rutaPorRol(prof.rol as string);
   }
   redirect(destino);
