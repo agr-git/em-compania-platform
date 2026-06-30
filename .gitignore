@@ -1,0 +1,44 @@
+# dependencias
+node_modules/
+.pnp/
+.pnp.js
+
+# next
+.next/
+out/
+build/
+dist/
+
+# entornos
+.env
+.env.local
+.env*.local
+
+# supabase
+.branches/
+.temp/
+supabase/.temp/
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# editores / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.pem
+
+# tests
+coverage/
+playwright-report/
+test-results/
+
+# misc
+*.tsbuildinfo
+.vercel
+
+# artefactos de research (firecrawl dumps)
+.firecrawl/
