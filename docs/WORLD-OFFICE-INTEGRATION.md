@@ -5,10 +5,18 @@
 > público y no se toca la cuenta real durante el concurso), sino **demostrar que
 > entendemos la API y tenemos un plan claro, profundo y viable** para conectarla.
 >
-> Fuentes consultadas: documentación oficial de desarrolladores de World Office
-> (`developer.worldoffice.cloud`, `devapidoc.worldoffice.cloud`). Los detalles de
-> autenticación, vigencia de token, prefijo de header, conceptos del modelo y códigos de
-> error documentados aquí provienen de esa documentación pública.
+> Fuentes consultadas (verificadas): portal oficial `developer.worldoffice.cloud`
+> (© 2026), portal espejo `devapidoc.worldoffice.cloud`, su **Swagger UI**
+> (`devapidoc.worldoffice.cloud/documentacion.html`, OpenAPI 3.0) y la página oficial de
+> *Implementaciones* (ejemplos de código reales). Autenticación, endpoints, paginación,
+> formato de payload y catálogo de errores provienen de esas fuentes.
+>
+> **Nivel de confianza:** los paths, el catálogo de errores y el ejemplo de payload están
+> confirmados. Lo marcado *"a confirmar en go-live"* no es verificable públicamente porque
+> el OpenAPI crudo (`/v3/api-docs`) está protegido (Azure 401) y algunos bodies de respuesta
+> se publican solo como imágenes o tras autenticación. Base URL de producción real:
+> **`https://api.worldoffice.cloud`** (el host de la doc Swagger, `wo-backend-dev.azurewebsites.net`,
+> es el entorno de desarrollo).
 
 ---
 
@@ -31,13 +39,20 @@ entorno**, no reescribir lógica. Esa es la prueba de que el 90% entregado encaj
 ## 2. Hechos confirmados de la API (investigación)
 
 ### 2.1 Autenticación
-- Token tipo **JWT**, **vigencia 12 horas**.
-- Se obtiene por el servicio **`gestionarTokenAPILicencia`** (enviando el
-  `correo_electronico_registrado`) o desde la UI en *Configuración → Configuración
-  General → API* (token + fecha de vencimiento, copiable al portapapeles).
-- El token se incluye en el **header de cada petición con el prefijo `WO`**:
+- Token tipo **JWT**, **vigencia 12 horas** (confirmado en la doc: *"tendrá una vigencia de
+  12 horas"*).
+- Se obtiene por **`POST gestionarTokenAPILicencia`** con un body que incluye
+  `correo_electronico_registrado` y `Content-Type: text/plain` (autenticación básica), o
+  desde la UI en *Configuración → Configuración General → API*.
+- Respuesta exitosa: **200 OK** con el JWT en el cuerpo. Errores del servicio de token:
+  **400** (datos faltantes/incorrectos), **500** (interno), `TIPO_USUARIO_NO_VALIDO` (la
+  licencia no permite token vía API).
+- El token se incluye en el **header de cada petición con el prefijo `WO `** (con espacio):
   `Authorization: WO <token>`. Si falta → **401 Unauthorized**.
-- El servicio de token usa autenticación básica; el cuerpo va como `text/plain`.
+- **Un solo token activo por cuenta de servicio:** se revoca y se regenera; no hay endpoint
+  de *refresh* documentado (el modelo es regenerar al expirar). La fecha de vencimiento del
+  token **no puede superar la de la licencia**.
+- La API está disponible **solo en la edición Enterprise** de World Office Cloud.
 
 > **Implicación de diseño:** necesitamos un *token manager* que cachee el JWT y lo
 > **renueve antes de las 12h** (con margen, p. ej. a las 11h), con bloqueo para evitar
@@ -45,8 +60,12 @@ entorno**, no reescribir lógica. Esa es la prueba de que el 90% entregado encaj
 
 ### 2.2 Límites y transporte
 - **HTTPS obligatorio.**
-- **Rate limit documentado: 500 req/seg.** Holgado para nuestro volumen (3 vendedores),
-  pero igual aplicamos backoff y colas (§6) por robustez.
+- **Rate limit documentado: 500 req/seg** (FAQ del portal nuevo `developer.worldoffice.cloud`).
+  Holgado para nuestro volumen (3 vendedores), pero igual aplicamos backoff y colas (§6) por
+  robustez. ⚠️ La cifra solo aparece en el portal nuevo; el espejo aún muestra un placeholder
+  → **reconfirmar con soporte en go-live** (500/seg es alto para un ERP y podría ser un techo
+  de marketing más que un límite por cuenta).
+- **Límite de borrado masivo: 5 registros por petición** (`MAXIMO_ALCANZADO` si se excede).
 - Las peticiones **modifican datos reales de la suscripción** → en producción toda
   escritura pasa por validación + idempotencia. Por eso en el concurso **nada escribe**.
 
@@ -90,10 +109,125 @@ de enviar, para que el pedido entre limpio:
   prefijo + idEmpresa + documentoTipo**. **Esta es la llave natural de idempotencia**
   (§5). La usamos para que un reintento nunca cree un pedido duplicado.
 
+**Glosario completo de referencia** (del catálogo oficial, para la bandeja de corrección del
+admin y la clasificación reintentable/no-reintentable del worker):
+
+| Código | Significado | Acción |
+|---|---|---|
+| `EMPRESA_ERRADA` | `idEmpresa` no registrado | Validar con `listarEmpresas` · no reintentar |
+| `TERCERO_ERRADO` / `TERCERO_NO_ENCONTRADO` | Cliente inexistente en WO | Mapear `wo_tercero_id` · no reintentar |
+| `DIRRECCION_TERCERO_EXTERNO_ERRADO` (sic) | Falta dirección del tercero | Registrar dirección · no reintentar |
+| `INVENTARIO_NO_ENCONTRADO` | `idInventario` inexistente | Validar mapeo de catálogo · no reintentar |
+| `BODEGA_NO_EXISTE` | Bodega no registrada | Validar `idBodega` · no reintentar |
+| `ERROR_UNIDAD_INVENTARIO` | Unidad no registrada | Validar `listarUnidadMedida` · no reintentar |
+| `FORMA_PAGO_NO_SOPORTADA` | Forma de pago no registrada | Validar `listarFormaPagoDocumento` · no reintentar |
+| `ERROR_MONEDA` | Moneda no registrada | Validar `listarMonedas` · no reintentar |
+| `PREFIJO_FACTURA_ERRADO` | Prefijo no registrado | Validar `listarPrefijoDocumento` · no reintentar |
+| `CENTRO_COSTO_NO_EXISTE` | Centro de costo no registrado | Validar `listarCentroCosto` · no reintentar |
+| `ERROR_CLASIFICACION` | Clasificación no registrada | Validar mapa de clasificación · no reintentar |
+| `TIPO_DOCUMENTO_NO_ADMITO_API` | `documentoTipo` inválido para la operación | Resolver tipo correcto · no reintentar |
+| `ERROR_INGRESO_RENGLONES` / `RENGLONES_NO_ACTUALIZADO` | Renglón mal/incompleto | Validación Zod del array · no reintentar |
+| `FECHA_ERRADA` | Fecha mal formateada | Formato `yyyy-MM-dd` · no reintentar |
+| `DOCUMENTO_NO_CONTABILIZADO` | Falta contabilizar antes de facturar | Ejecutar `contabilizarDocumento` primero (§F) |
+| `ERROR_DOCUMENTO_ELECTRONICO` | Tipo no elegible para FE | Validar tipo · no reintentar |
+| `ERROR_FACTURACION_ELECTRONICA` | Fallo genérico de transmisión FE | Revisar `moreInfo` · evaluar reintento |
+| `DUPLICATE_KEY` | Documento con misma `numero+prefijo+idEmpresa+documentoTipo` | **Éxito idempotente** (§5) |
+| `MAXIMO_ALCANZADO` | Borrado masivo > 5 registros | Enviar ≤5 ids |
+| HTTP `401` / `500` | Token ausente o error interno | `401`→renovar token y reintentar 1 vez · `500`→backoff |
+
 > **Por qué esto suma puntos:** no estamos adivinando. El plan está anclado a la
-> autenticación real, a los conceptos reales del modelo y a los errores reales que la API
-> devuelve. Cada validación previa que hacemos corresponde a un error documentado que así
-> evitamos.
+> autenticación real, a los endpoints y conceptos reales del modelo y a los errores reales
+> que la API devuelve. Cada validación previa que hacemos corresponde a un error documentado
+> que así evitamos.
+
+### 2.5 Catálogo de endpoints REST confirmados
+
+Base URL producción: **`https://api.worldoffice.cloud`** · todo bajo `/api/v1/`. Extraído del
+Swagger oficial. Los `listar*` son **POST** (reciben body de paginación/filtros, ver §2.7).
+
+| Operación | Método | Path | Para qué en nuestro flujo |
+|---|---|---|---|
+| Generar token | POST | `gestionarTokenAPILicencia` | Auth (§2.1) |
+| Listar tipos de documento | POST | `/api/v1/documentosTipos/listarTipoDocumento` | Resolver `documentoTipo` (FV, etc.) |
+| Listar prefijos | POST | `/api/v1/documentosTipos/listarPrefijoDocumento` | Resolver `prefijo` |
+| Listar inventarios | POST | `/api/v1/inventarios/listarInventarios` | Sync de catálogo |
+| Inventario por código | GET | `/api/v1/inventarios/consultaCodigo/{codigo}` | Mapear `codigo_contable → idInventario` |
+| Inventario por ID | GET | `/api/v1/inventarios/consultaId/{id}` | Validar producto |
+| Existencias (empresa/bodega) | GET | `/api/v1/inventarios/{id}/existencias/empresa-bodega` | Stock en vivo |
+| Listar bodegas | POST | `/api/v1/bodegas/listarBodega` | Catálogo de referencia |
+| Listar terceros | POST | `/api/v1/terceros/listarTerceros` | Mapear clientes |
+| Tercero por identificación | GET | `/api/v1/terceros/identificacion/{identificacion}` | Resolver `wo_tercero_id` por NIT |
+| **Crear documento de venta** | POST | `/api/v1/documentos/crearDocumentoVenta` | **Crear el pedido (§4)** |
+| Editar documento de venta | PUT | `/api/v1/documentos/editarDocumentoVenta` | Correcciones |
+| Consultar documento por ID | GET | `/api/v1/documentos/getDocumentoId/{id}` | Recuperar `wo_order_id` (idempotencia §5) |
+| **Contabilizar documento** | POST | `/api/v1/documentos/contabilizarDocumento/{id}` | Paso obligatorio antes de FE (§F) |
+| **Facturar electrónicamente** | POST | `/api/v1/documentos/facturaElectronica/{id}` | Emisión DIAN |
+| Consultar CUFE | GET | `/api/v1/documentos/cufe/{documentoId}` | CUFE de la factura |
+| Visualizar PDF | GET | `/api/v1/documentos/visualizarDocumento/{id}` | Representación gráfica |
+| Enviar por email | GET | `/api/v1/documentos/enviaDocumentoMail/{id}/{email}/{nombre}` | Envío al cliente |
+| **Catálogos de referencia** | POST | `/api/v1/unidadesDeMedida/listarUnidadMedida` · `/api/v1/monedas/listarMonedas` · `/api/v1/formasDePago/listarFormaPagoDocumento` · `/api/v1/empresas/listarEmpresas` · `/api/v1/centrosDeCosto/listarCentroCosto` | Resolver IDs antes de armar el documento |
+
+> El dominio de la API cubre mucho más (compras, contabilidad, salida de almacén, módulos de
+> **salud** y **FE-RIPS/Ministerio**, importación masiva asíncrona). Para E.M. solo usamos el
+> subconjunto de ventas + catálogos de arriba.
+
+### 2.6 Ejemplo real de payload + mapeo al puerto
+
+Body real de `crearDocumentoVenta` (de la doc oficial de Implementaciones). **Ojo a las
+particularidades**, que el `WorldOfficeApiAdapter` debe respetar:
+
+```json
+{
+  "fecha": "2023-07-15",
+  "prefijo": 1,
+  "documentoTipo": "FV",
+  "idEmpresa": 2,
+  "idTerceroExterno": 2946,
+  "idTerceroInterno": 3664,
+  "idFormaPago": 5,
+  "idMoneda": 31,
+  "trm": "1",
+  "porcentajeDescuento": true,
+  "valDescuento": 0,
+  "reglones": [
+    { "idInventario": 4517, "unidadMedida": "doc", "cantidad": "2",
+      "valorUnitario": "1000", "idBodega": 1, "porDescuento": 0, "concepto": "..." }
+  ]
+}
+```
+
+- El array de líneas se llama literalmente **`reglones`** (sic, no `renglones`).
+- Cantidades y valores van como **strings** (`"cantidad":"2"`, `"valorUnitario":"1000"`).
+- El cliente es **`idTerceroExterno`**; el vendedor/responsable es **`idTerceroInterno`** (dos
+  terceros distintos).
+- Fechas en **`yyyy-MM-dd`**. Para crear se omiten los `id`; para editar se incluyen.
+
+> **Decisión de diseño:** nuestro `WorldOfficePort` (§3) mantiene nombres limpios de dominio
+> (`renglones`, `inventarioId`, `terceroId`). El **mapeo a los nombres reales de la API**
+> (`reglones`, `idInventario`, `idTerceroExterno`, números como string) vive **solo en el
+> `WorldOfficeApiAdapter`**. El dominio no conoce esas rarezas — esa es justo la ventaja del
+> patrón puerto/adapter. (Ver tabla de mapeo en el runbook de go-live, §8.)
+
+### 2.7 Paginación y filtros (endpoints `listar*`)
+
+Los `listar*` reciben un body como este (confirmado con ejemplos reales):
+
+```json
+{
+  "columnaOrdenar": "id",
+  "pagina": 0,                 // 0-based
+  "registrosPorPagina": 50,
+  "orden": "ASC",              // ASC | DESC
+  "filtros": [
+    { "atributo": "documentoTipo.codigoDocumento", "valor": "FV",
+      "tipoFiltro": 0, "operador": 0, "subGrupo": "filtro" }
+  ],
+  "canal": 0
+}
+```
+
+`pagina` es **0-based**; `atributo` admite rutas de propiedad anidadas. Lo usamos en el job de
+sync de catálogo (§7) iterando páginas hasta agotar resultados.
 
 ## 3. Contrato del puerto (`WorldOfficePort`)
 
@@ -166,6 +300,17 @@ CONTABLE                     │                              │
 electrónicamente**. La API rechaza facturar un documento no contabilizado
 (`DOCUMENTO_NO_CONTABILIZADO`).
 
+**Mapeo método del puerto → endpoint real:**
+
+| Método `WorldOfficePort` | Endpoint World Office |
+|---|---|
+| `crearPedido()` | `POST /api/v1/documentos/crearDocumentoVenta` |
+| `contabilizarDocumento(id)` | `POST /api/v1/documentos/contabilizarDocumento/{id}` |
+| `facturarElectronico(id)` | `POST /api/v1/documentos/facturaElectronica/{id}` → CUFE vía `GET /cufe/{id}` |
+| `listarInventario()` | `POST /api/v1/inventarios/listarInventarios` |
+| `consultarExistencias()` | `GET /api/v1/inventarios/{id}/existencias/empresa-bodega` |
+| `listarTiposDocumento()` | `POST /api/v1/documentosTipos/listarTipoDocumento` |
+
 ## 5. Idempotencia (clave para no duplicar pedidos)
 
 La API impone unicidad sobre `numero + prefijo + idEmpresa + documentoTipo`
@@ -222,6 +367,19 @@ Documentado para que el panel de evaluación vea que sabemos exactamente qué fa
 7. Prueba controlada: 1 pedido real de bajo monto → verificar que entra a WO →
    contabilizar → facturar. Validar idempotencia repitiendo el envío.
 8. Monitoreo del outbox las primeras 48h.
+
+**Pendientes a confirmar en go-live** (no verificables públicamente; el OpenAPI crudo está
+protegido y algunos bodies se publican solo como imágenes):
+- JSON literal de **respuesta** de `crearDocumentoVenta` (campos `idDocumento`/`numero`/
+  `estado`) → para guardar `wo_order_id`.
+- Estructura de la respuesta de **facturación electrónica** (`ResultadoFEPojo` /
+  `RespuestaEnvioDto`): si incluye XML firmado, estado de aceptación/rechazo DIAN.
+- Path exacto y host del servicio de **token** en producción (la doc usa un placeholder).
+- Precisión/separador decimal de los campos numéricos enviados como string.
+- La cifra real de **rate limit** por cuenta (reconfirmar el 500 req/seg).
+
+Estos puntos no bloquean el 90%: el contrato del puerto ya los aísla y el `WorldOfficeApiAdapter`
+se ajusta sin tocar dominio cuando se confirmen.
 
 ## 9. Riesgos y mitigaciones
 
