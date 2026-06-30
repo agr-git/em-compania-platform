@@ -1,0 +1,59 @@
+name: CI
+
+# Gate de calidad del repo. Se dispara en cada push a rama y en cada PR a main.
+# main no se mergea en rojo. Detalle: docs/ENGINEERING-PRACTICES.md §2.
+
+on:
+  push:
+    branches-ignore:
+      - main   # main entra por PR; evitamos correr dos veces el mismo commit
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+# Cancela corridas viejas de la misma rama/PR cuando llega un push nuevo.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint · Typecheck · Test · Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test (unit)
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+        env:
+          # Valores dummy: el build no debe requerir secretos reales.
+          # En el concurso los adapters corren en modo mock.
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
+          WORLD_OFFICE_ADAPTER: mock
+          NOTIFICATION_ADAPTER: mock
