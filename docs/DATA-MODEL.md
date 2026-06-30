@@ -3,6 +3,11 @@
 Base: Postgres (Supabase). Todo con **RLS activo**. SQL versionado en
 `supabase/migrations/`.
 
+> Implementado (Bloque 1) en `supabase/migrations/*_init_schema.sql` (tablas, enums,
+> índices, trigger de `search_tsv`) y `*_rls_policies.sql` (RLS + helpers
+> `current_rol()` / `es_admin()` con `SECURITY DEFINER`). Catálogo de muestra en
+> `supabase/seed/` (60 productos, `pnpm db:seed`).
+
 ## Diagrama lógico
 
 ```
