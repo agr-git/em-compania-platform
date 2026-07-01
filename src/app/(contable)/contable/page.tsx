@@ -76,7 +76,7 @@ export default async function ContablePage({
                         <form action={facturarPedido.bind(null, p.id)}>
                           <button
                             type="submit"
-                            className="rounded-md bg-brand-primary px-3 py-1 text-xs font-medium text-brand-primary-foreground hover:opacity-90"
+                            className="btn-funky px-3 py-1.5 text-xs"
                           >
                             Convertir en factura
                           </button>

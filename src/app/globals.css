@@ -1,35 +1,118 @@
 @import "tailwindcss";
 
+/* Tema "Funky": papel crema cálido, terracota héroe, Bricolage display,
+   sombras duras desplazadas. Un solo tema (cálido) — la variante dark se
+   neutraliza para que la estética siempre se muestre. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fffcf7; /* crema cálida (papel) */
+  --foreground: #171717; /* tinta */
 
   /* Marca — valores por defecto. El root layout los sobrescribe desde
      src/lib/branding.ts, así que el cliente solo edita ese archivo. */
-  --brand-primary: #171717;
-  --brand-primary-foreground: #fafafa;
-  --brand-accent: #2563eb;
+  --brand-primary: #e06e3a; /* terracota */
+  --brand-primary-foreground: #fffcf7;
+  --brand-ink: #171717;
+  --brand-cream: #fffcf7;
+  --brand-surface: #f4efe7;
+  --brand-border: #e6e1d6;
+  --brand-blue: #223c6d;
+  --brand-green: #1f8a5b;
+  --brand-coral: #ff8a80;
+  --brand-tan: #c8aa78;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Tokens de marca → utilidades bg-brand-*, text-brand-*, border-brand-* */
   --color-brand-primary: var(--brand-primary);
   --color-brand-primary-foreground: var(--brand-primary-foreground);
-  --color-brand-accent: var(--brand-accent);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-cream: var(--brand-cream);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-border: var(--brand-border);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-green: var(--brand-green);
+  --color-brand-coral: var(--brand-coral);
+  --color-brand-tan: var(--brand-tan);
+
+  /* Neutrales remapeados a tonos cálidos → toda la UI se calienta sin tocar componentes */
+  --color-neutral-50: #faf6ee;
+  --color-neutral-100: #f4efe7;
+  --color-neutral-200: #e6e1d6;
+  --color-neutral-300: #d8d0c2;
+  --color-neutral-400: #a89f8d;
+  --color-neutral-500: #7c7566;
+  --color-neutral-600: #5c5648;
+  --color-neutral-700: #494335;
+  --color-neutral-800: #2b2620;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #100f0d;
+
+  /* Radios y sombra "funky" (dura, desplazada) */
+  --radius-card: 16px;
+  --radius-pill: 100px;
+  --shadow-funky: 4px 4px 0 var(--brand-ink);
+  --shadow-funky-sm: 3px 3px 0 var(--brand-ink);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bricolage), var(--font-geist-sans), sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Botón firma: píldora terracota, borde tinta, sombra dura desplazada. */
+  .btn-funky {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-primary);
+    color: var(--brand-primary-foreground);
+    border: 1.5px solid var(--brand-ink);
+    box-shadow: var(--shadow-funky-sm);
+    font-weight: 700;
+    transition:
+      transform 0.08s ease,
+      box-shadow 0.08s ease;
+  }
+  .btn-funky:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--brand-ink);
+  }
+  .btn-funky:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--brand-ink);
+  }
+  .btn-funky:disabled {
+    opacity: 0.55;
+    transform: none;
+    box-shadow: var(--shadow-funky-sm);
+  }
+
+  /* Card firma: esquinas redondeadas, borde tinta, sombra dura. */
+  .card-funky {
+    border-radius: var(--radius-card);
+    border: 1.5px solid var(--brand-ink);
+    background: var(--brand-cream);
+    box-shadow: var(--shadow-funky);
+  }
 }

@@ -31,7 +31,7 @@ export default async function CotizacionPage({ params }: { params: Promise<{ id:
           <form action={convertir}>
             <button
               type="submit"
-              className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-brand-primary-foreground hover:opacity-90"
+              className="btn-funky px-4 py-2 text-sm"
             >
               Convertir en pedido
             </button>

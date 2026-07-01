@@ -23,7 +23,7 @@ export function Logo({ className }: { className?: string }) {
 
   return (
     <span
-      className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-brand-primary text-[11px] font-bold text-brand-primary-foreground ${className ?? ""}`}
+      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-[1.5px] border-brand-ink bg-brand-primary text-[12px] font-extrabold text-brand-primary-foreground shadow-[2px_2px_0_var(--brand-ink)] ${className ?? ""}`}
       aria-hidden
     >
       {logo.text}
