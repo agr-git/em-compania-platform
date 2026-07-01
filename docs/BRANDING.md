@@ -14,7 +14,7 @@
 | `productName` | Nombre del módulo (login, título) |
 | `tagline` | Frase de valor |
 | `logo` | Monograma (iniciales) **o** imagen desde `/public` |
-| `colors.primary` / `primaryForeground` / `accent` | Color de botones y acentos en toda la app |
+| `colors.*` | Paleta completa: `primary`/`primaryForeground` (botones), `ink`, `cream`, `surface`, `border`, `blue`, `green`, `coral`, `tan` — se inyectan como variables CSS y calientan toda la UI |
 
 Al guardar, los cambios se reflejan en **login, header, botones y metadata** sin tocar
 componentes.
@@ -29,14 +29,30 @@ componentes.
 
 ## Cambiar colores
 
-Edita `colors` en `branding.ts`:
+Edita `colors` en `branding.ts` (paleta completa):
 ```ts
-colors: { primary: "#0B5", primaryForeground: "#fff", accent: "#0B5" }
+colors: {
+  primary: "#e06e3a", primaryForeground: "#fffcf7",   // acción (botones píldora)
+  ink: "#171717", cream: "#fffcf7", surface: "#f4efe7", border: "#e6e1d6",
+  blue: "#223c6d", green: "#1f8a5b", coral: "#ff8a80", tan: "#c8aa78",
+}
 ```
-Internamente se inyectan como variables CSS (`--brand-primary`, …) en el root layout y
-Tailwind las expone como utilidades: `bg-brand-primary`, `text-brand-primary-foreground`,
-`text-brand-accent`. **Usa esas utilidades** en componentes nuevos (no colores fijos), para
-que el rebrand siga siendo de un solo archivo.
+Se inyectan como variables CSS (`--brand-*`) en el root layout y Tailwind las expone como
+utilidades: `bg-brand-primary`, `bg-brand-cream`, `text-brand-blue`, `border-brand-border`…
+Además, la escala `neutral-*` de Tailwind está **remapeada a tonos cálidos** en `globals.css`
+(por eso `bg-neutral-50`/`border-neutral-200` ya salen crema). **Usa utilidades de marca**
+en componentes nuevos (no colores fijos) para que el rebrand siga siendo de un solo archivo.
+
+## Estilo "Funky" (tema actual)
+
+El tema activo es **Alternativas Funky**: papel crema cálido, terracota héroe, display
+**Bricolage Grotesque** (títulos) sobre Geist (cuerpo), y la firma visual de **botones píldora
+con sombra dura desplazada**. Piezas reutilizables en `globals.css`:
+
+- `.btn-funky` — botón píldora con borde tinta + sombra dura (usado en acciones primarias).
+- `.card-funky` — card con esquinas redondeadas + sombra dura.
+- Utilidades de radio/sombra: `rounded-card`, `rounded-pill`, `shadow-funky`.
+- Fuente display: se aplica a `h1/h2/h3` automáticamente (`--font-display` = Bricolage).
 
 ## Regla para mantener el rebrand sin refactor
 

@@ -8,7 +8,7 @@
  *
  * Los colores se inyectan como variables CSS en el root layout y Tailwind las
  * expone como utilidades: `bg-brand-primary`, `text-brand-primary-foreground`,
- * `text-brand-accent` (ver globals.css).
+ * `text-brand-blue`, `text-brand-green`, `bg-brand-cream`… (ver globals.css).
  */
 
 export type LogoConfig =
@@ -26,11 +26,18 @@ export interface Branding {
   tagline: string;
   /** Logo: monograma (iniciales) o imagen desde /public. */
   logo: LogoConfig;
-  /** Colores de marca (se vuelven variables CSS). */
+  /** Colores de marca (se vuelven variables CSS `--brand-*`). */
   colors: {
     primary: string;
     primaryForeground: string;
-    accent: string;
+    ink: string;
+    cream: string;
+    surface: string;
+    border: string;
+    blue: string;
+    green: string;
+    coral: string;
+    tan: string;
   };
   /** Opcional: "Hecho por …" en el pie. */
   poweredBy?: string;
@@ -43,18 +50,36 @@ export const branding: Branding = {
   tagline: "Cotiza, arma pedidos y envíalos a World Office Cloud, listos para facturar.",
   // Para usar un logo propio: { type: "image", src: "/logo.svg", alt: "E.M. Compañía" }
   logo: { type: "monogram", text: "EM" },
+  // Tema "Funky": papel crema cálido + terracota héroe (ver docs/BRANDING.md).
   colors: {
-    primary: "#171717",
-    primaryForeground: "#fafafa",
-    accent: "#2563eb",
+    primary: "#e06e3a", // terracota
+    primaryForeground: "#fffcf7",
+    ink: "#171717",
+    cream: "#fffcf7",
+    surface: "#f4efe7",
+    border: "#e6e1d6",
+    blue: "#223c6d",
+    green: "#1f8a5b",
+    coral: "#ff8a80",
+    tan: "#c8aa78",
   },
 };
 
 /** Variables CSS de marca para inyectar en el root layout (<html style=…>). */
 export function brandCssVars(): React.CSSProperties {
+  const c = branding.colors;
   return {
-    "--brand-primary": branding.colors.primary,
-    "--brand-primary-foreground": branding.colors.primaryForeground,
-    "--brand-accent": branding.colors.accent,
+    "--brand-primary": c.primary,
+    "--brand-primary-foreground": c.primaryForeground,
+    "--brand-ink": c.ink,
+    "--brand-cream": c.cream,
+    "--brand-surface": c.surface,
+    "--brand-border": c.border,
+    "--brand-blue": c.blue,
+    "--brand-green": c.green,
+    "--brand-coral": c.coral,
+    "--brand-tan": c.tan,
+    "--background": c.cream,
+    "--foreground": c.ink,
   } as React.CSSProperties;
 }
