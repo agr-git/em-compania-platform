@@ -10,7 +10,7 @@ import { START, Workflow } from "@kapso/workflows";
  */
 const workflow = new Workflow("whatsapp-pedidos", {
   name: "WhatsApp · Pedidos E.M. Compañía",
-  status: "draft",
+  status: "active",
 });
 
 workflow.addTrigger({

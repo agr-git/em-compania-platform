@@ -5,13 +5,13 @@
     "whatsapp-pedidos": {
       "files": {
         "workflows/whatsapp-pedidos/definition.json": "29937ae70b08ee59a84a0c80eae593b8ce7de85809aa2c4e94624f072a396e1d",
-        "workflows/whatsapp-pedidos/workflow.yaml": "e11e91c2372843c72777a39489a618c3897a82561f78f931eb90e81bf2344223"
+        "workflows/whatsapp-pedidos/workflow.yaml": "b1ef0eee9e0f50efbc0f46d29f6144c43def0d67a83a0739a1a5b5e90c3c68ce"
       },
       "id": "ed706995-8d2f-4d05-9669-0bc66460d7fa",
       "lockVersion": 2,
       "slug": "whatsapp-pedidos",
       "sourceFile": {
-        "hash": "5d5885181238f1dc308ad034bf183e58a2355c44e5058c4d628115072c9c12f7",
+        "hash": "9857dbdf8d5acb126276d13f0537df5439086af80b950cb66439c75ff70205b7",
         "path": "workflows/whatsapp-pedidos/workflow.ts"
       },
       "status": "draft",
