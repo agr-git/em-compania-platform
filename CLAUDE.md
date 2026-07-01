@@ -143,6 +143,7 @@ pnpm db:seed        # cargar catálogo de muestra (IA)
 | `docs/ENGINEERING-PRACTICES.md` | ⭐ CI/CD y mapa disparador→acción (qué hacer automáticamente) |
 | `docs/ROADMAP-1DIA.md` | Sprint comprimido de 1 día (plan de ejecución vigente) |
 | `docs/BRANDING.md` | Cómo cambiar la marca (un solo archivo: `src/lib/branding.ts`) |
+| `docs/DEPLOYMENT.md` | Despliegue en Vercel (no GitHub Pages: la app es dinámica) |
 | `docs/STACK.md` | Stack elegido y por qué |
 | `docs/ARCHITECTURE.md` | Arquitectura hexagonal, capas, flujo de datos |
 | `docs/DATA-MODEL.md` | Esquema de base de datos y RLS |
