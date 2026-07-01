@@ -1,6 +1,7 @@
 import { Paginacion } from "@/components/paginacion";
 import { BarraCarrito } from "@/features/catalog/components/barra-carrito";
 import { IndiceEditorial } from "@/features/catalog/components/indice-editorial";
+import { MasVendidos } from "@/features/catalog/components/mas-vendidos";
 import { RejillaFichas } from "@/features/catalog/components/rejilla-fichas";
 import { ResultsTable } from "@/features/catalog/components/results-table";
 import { SearchBox } from "@/features/catalog/components/search-box";
@@ -28,6 +29,8 @@ export default async function CatalogoPage({
           Busca por <strong>descripción</strong> o por <strong>código</strong> — ninguna es obligatoria.
         </p>
       </div>
+
+      {!q && <MasVendidos />}
 
       <SearchBox defaultValue={q} />
 

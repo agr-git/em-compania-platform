@@ -15,6 +15,15 @@ export interface ResultadoBusqueda {
   total: number;
 }
 
+export interface ProductoVendido {
+  id: string;
+  codigo_contable: string;
+  descripcion: string;
+  categoria: string;
+  precio_lista: number;
+  vendido: number;
+}
+
 /** Metadatos de cada familia del catálogo (color de marca + etiqueta). */
 export const CATEGORIAS: Record<string, { label: string; corto: string; color: string }> = {
   sellos_mecanicos: { label: "Sellos mecánicos", corto: "Sellos", color: "var(--brand-blue)" },
