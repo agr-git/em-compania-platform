@@ -1,5 +1,6 @@
 import { formatCOP } from "@/lib/format";
 import { CATEGORIAS, type ProductoBusqueda } from "../types";
+import { AgregarCarrito } from "./agregar-carrito";
 import { ProductoAvatar } from "./producto-avatar";
 import { StockBadge } from "./stock-badge";
 
@@ -34,8 +35,16 @@ export function RejillaFichas({ productos }: { productos: ProductoBusqueda[] }) 
               <span className="font-mono text-xs text-neutral-500">{p.codigo_contable}</span>
               <p className="text-sm font-medium leading-snug text-neutral-900">{p.descripcion}</p>
             </div>
-            <div className="mt-auto text-base font-semibold tabular-nums">
-              {formatCOP(p.precio_lista)}
+            <div className="mt-auto flex items-center justify-between gap-2">
+              <span className="text-base font-semibold tabular-nums">{formatCOP(p.precio_lista)}</span>
+              <AgregarCarrito
+                item={{
+                  producto_id: p.id,
+                  codigo: p.codigo_contable,
+                  descripcion: p.descripcion,
+                  precio_unitario: p.precio_lista,
+                }}
+              />
             </div>
           </div>
         );
