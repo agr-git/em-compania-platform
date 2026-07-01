@@ -37,6 +37,7 @@ export function ResultsTable({ productos }: { productos: ProductoBusqueda[] }) {
               </td>
               <td className="px-4 py-2 text-right">
                 <AgregarCarrito
+                  agotado={p.cantidad_disponible <= 0}
                   item={{
                     producto_id: p.id,
                     codigo: p.codigo_contable,

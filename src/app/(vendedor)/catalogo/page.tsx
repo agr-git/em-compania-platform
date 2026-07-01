@@ -22,7 +22,8 @@ export default async function CatalogoPage({
   const { productos, total } = await buscarProductos(q, esIndice ? 1 : pagina, esIndice ? 500 : POR_PAGINA);
 
   return (
-    <div className="flex flex-col gap-5">
+    // pb-24: deja espacio para la barra flotante del carrito (no tapa la paginación).
+    <div className="flex flex-col gap-5 pb-24">
       <div className="flex flex-col gap-1">
         <h1 className="text-xl font-semibold tracking-tight">Catálogo</h1>
         <p className="text-sm text-neutral-500">

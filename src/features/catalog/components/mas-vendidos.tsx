@@ -28,6 +28,7 @@ export async function MasVendidos() {
             <div className="mt-auto flex items-center justify-between gap-2">
               <span className="text-sm font-semibold tabular-nums">{formatCOP(p.precio_lista)}</span>
               <AgregarCarrito
+                agotado={p.cantidad_disponible <= 0}
                 item={{
                   producto_id: p.id,
                   codigo: p.codigo_contable,

@@ -135,21 +135,27 @@ export function QuoteBuilder({ clientes }: { clientes: ClienteOption[] }) {
         />
         {resultados.length > 0 && (
           <ul className="absolute z-10 mt-1 w-full overflow-hidden rounded-md border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
-            {resultados.map((p) => (
-              <li key={p.id}>
-                <button
-                  type="button"
-                  onClick={() => agregar(p)}
-                  className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                >
-                  <span>
-                    <span className="font-mono text-xs text-neutral-500">{p.codigo_contable}</span>{" "}
-                    {p.descripcion}
-                  </span>
-                  <span className="shrink-0 tabular-nums text-neutral-500">{formatCOP(p.precio_lista)}</span>
-                </button>
-              </li>
-            ))}
+            {resultados.map((p) => {
+              const agotado = p.cantidad_disponible <= 0;
+              return (
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    disabled={agotado}
+                    onClick={() => agregar(p)}
+                    className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800"
+                  >
+                    <span>
+                      <span className="font-mono text-xs text-neutral-500">{p.codigo_contable}</span>{" "}
+                      {p.descripcion}
+                    </span>
+                    <span className="shrink-0 tabular-nums text-neutral-500">
+                      {agotado ? "Agotado" : formatCOP(p.precio_lista)}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
