@@ -1,28 +1,6 @@
+import { formatCOP } from "@/lib/format";
 import type { ProductoBusqueda } from "../types";
-
-const cop = new Intl.NumberFormat("es-CO", {
-  style: "currency",
-  currency: "COP",
-  maximumFractionDigits: 0,
-});
-
-function StockBadge({ cantidad }: { cantidad: number }) {
-  if (cantidad <= 0) {
-    return <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Agotado</span>;
-  }
-  if (cantidad <= 5) {
-    return (
-      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-        Bajo · {cantidad}
-      </span>
-    );
-  }
-  return (
-    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-      {cantidad} disp.
-    </span>
-  );
-}
+import { StockBadge } from "./stock-badge";
 
 export function ResultsTable({ productos }: { productos: ProductoBusqueda[] }) {
   if (productos.length === 0) {
@@ -34,8 +12,8 @@ export function ResultsTable({ productos }: { productos: ProductoBusqueda[] }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800">
-      <table className="w-full text-left text-sm">
+    <div className="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
+      <table className="w-full min-w-[520px] text-left text-sm">
         <thead className="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500 dark:bg-neutral-900">
           <tr>
             <th className="px-4 py-2 font-medium">Código</th>
@@ -51,7 +29,7 @@ export function ResultsTable({ productos }: { productos: ProductoBusqueda[] }) {
                 {p.codigo_contable}
               </td>
               <td className="px-4 py-2 text-neutral-900 dark:text-neutral-100">{p.descripcion}</td>
-              <td className="px-4 py-2 text-right tabular-nums">{cop.format(p.precio_lista)}</td>
+              <td className="px-4 py-2 text-right tabular-nums">{formatCOP(p.precio_lista)}</td>
               <td className="px-4 py-2 text-right">
                 <StockBadge cantidad={p.cantidad_disponible} />
               </td>
