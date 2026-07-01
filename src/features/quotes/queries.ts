@@ -1,9 +1,52 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+function unwrap1<T>(v: T | T[] | null | undefined): T | null {
+  if (Array.isArray(v)) return v[0] ?? null;
+  return v ?? null;
+}
+
 export interface ClienteOption {
   id: string;
   nombre: string;
   descuento_default: number;
+}
+
+export interface CotizacionFila {
+  id: string;
+  estado: string;
+  total: number;
+  created_at: string;
+  cliente_nombre: string;
+}
+
+/** Cotizaciones del vendedor actual (recientes primero, paginadas). */
+export async function getMisCotizaciones(
+  pagina = 1,
+  porPagina = 20,
+): Promise<{ cotizaciones: CotizacionFila[]; total: number }> {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const desde = (Math.max(1, pagina) - 1) * porPagina;
+
+  const { data, error, count } = await supabase
+    .from("cotizaciones")
+    .select("id, estado, total, created_at, clientes(nombre)", { count: "exact" })
+    .eq("vendedor_id", user?.id ?? "")
+    .order("created_at", { ascending: false })
+    .range(desde, desde + porPagina - 1);
+  if (error) throw error;
+
+  type Raw = { id: string; estado: string; total: number | string; created_at: string; clientes?: { nombre: string } | { nombre: string }[] | null };
+  const cotizaciones = ((data ?? []) as unknown as Raw[]).map((r) => ({
+    id: r.id,
+    estado: r.estado,
+    total: Number(r.total),
+    created_at: r.created_at,
+    cliente_nombre: unwrap1(r.clientes)?.nombre ?? "—",
+  }));
+  return { cotizaciones, total: count ?? 0 };
 }
 
 export async function getClientes(): Promise<ClienteOption[]> {
