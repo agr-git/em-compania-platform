@@ -1,5 +1,6 @@
-import { IndiceEditorial } from "@/features/catalog/components/indice-editorial";
 import { Paginacion } from "@/components/paginacion";
+import { BarraCarrito } from "@/features/catalog/components/barra-carrito";
+import { IndiceEditorial } from "@/features/catalog/components/indice-editorial";
 import { RejillaFichas } from "@/features/catalog/components/rejilla-fichas";
 import { ResultsTable } from "@/features/catalog/components/results-table";
 import { SearchBox } from "@/features/catalog/components/search-box";
@@ -48,6 +49,8 @@ export default async function CatalogoPage({
       {!esIndice && (
         <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={total} etiqueta="productos" />
       )}
+
+      <BarraCarrito />
     </div>
   );
 }

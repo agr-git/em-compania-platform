@@ -1,5 +1,6 @@
 import { formatCOP } from "@/lib/format";
 import type { ProductoBusqueda } from "../types";
+import { AgregarCarrito } from "./agregar-carrito";
 import { StockBadge } from "./stock-badge";
 
 export function ResultsTable({ productos }: { productos: ProductoBusqueda[] }) {
@@ -20,6 +21,7 @@ export function ResultsTable({ productos }: { productos: ProductoBusqueda[] }) {
             <th className="px-4 py-2 font-medium">Descripción</th>
             <th className="px-4 py-2 text-right font-medium">Precio</th>
             <th className="px-4 py-2 text-right font-medium">Stock</th>
+            <th className="px-4 py-2 text-right font-medium">Cotizar</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -32,6 +34,16 @@ export function ResultsTable({ productos }: { productos: ProductoBusqueda[] }) {
               <td className="px-4 py-2 text-right tabular-nums">{formatCOP(p.precio_lista)}</td>
               <td className="px-4 py-2 text-right">
                 <StockBadge cantidad={p.cantidad_disponible} />
+              </td>
+              <td className="px-4 py-2 text-right">
+                <AgregarCarrito
+                  item={{
+                    producto_id: p.id,
+                    codigo: p.codigo_contable,
+                    descripcion: p.descripcion,
+                    precio_unitario: p.precio_lista,
+                  }}
+                />
               </td>
             </tr>
           ))}

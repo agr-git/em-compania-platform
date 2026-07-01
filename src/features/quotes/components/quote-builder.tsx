@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { calcularTotales, totalLinea } from "@/core/domain/cotizacion";
 import type { ProductoBusqueda } from "@/features/catalog/types";
 import { formatCOP } from "@/lib/format";
+import { useCarrito } from "@/features/quotes/cart";
 import { buscarProductosAction, crearCotizacion } from "../actions";
 import type { ClienteOption } from "../queries";
 
@@ -25,6 +26,26 @@ export function QuoteBuilder({ clientes }: { clientes: ClienteOption[] }) {
   const [resultados, setResultados] = useState<ProductoBusqueda[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  // Prefill desde el carrito del catálogo (una sola vez).
+  const { items: itemsCarrito, limpiar } = useCarrito();
+  const prefilled = useRef(false);
+  useEffect(() => {
+    if (prefilled.current || itemsCarrito.length === 0) return;
+    prefilled.current = true;
+    setLineas((prev) =>
+      prev.length > 0
+        ? prev
+        : itemsCarrito.map((it) => ({
+            producto_id: it.producto_id,
+            codigo: it.codigo,
+            descripcion: it.descripcion,
+            precio_unitario: it.precio_unitario,
+            cantidad: 1,
+            descuento_pct: descuentoCliente,
+          })),
+    );
+  }, [itemsCarrito, descuentoCliente]);
 
   useEffect(() => {
     const t = setTimeout(async () => {
@@ -71,6 +92,7 @@ export function QuoteBuilder({ clientes }: { clientes: ClienteOption[] }) {
     setError(null);
     startTransition(async () => {
       try {
+        limpiar(); // vaciar el carrito: la cotización queda persistida al redirigir
         await crearCotizacion({
           cliente_id: clienteId,
           lineas: lineas.map((l) => ({
