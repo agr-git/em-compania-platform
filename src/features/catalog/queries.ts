@@ -1,5 +1,17 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { ProductoBusqueda, ResultadoBusqueda } from "./types";
+import type { ProductoBusqueda, ProductoVendido, ResultadoBusqueda } from "./types";
+
+/** Top de productos más vendidos (agregado global sobre pedido_items). */
+export async function getMasVendidos(limite = 8): Promise<ProductoVendido[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("mas_vendidos", { limite });
+  if (error) throw error;
+  return (data ?? []).map((r: ProductoVendido) => ({
+    ...r,
+    precio_lista: Number(r.precio_lista),
+    vendido: Number(r.vendido),
+  }));
+}
 
 /**
  * Búsqueda dual PAGINADA (por descripción O por código). Delega en la función
