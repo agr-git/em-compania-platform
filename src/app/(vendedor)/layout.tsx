@@ -12,7 +12,9 @@ export default async function VendedorLayout({ children }: { children: React.Rea
         <AppHeader
           nav={[
             { href: "/catalogo", label: "Catálogo" },
-            { href: "/cotizaciones/nueva", label: "Nueva cotización" },
+            { href: "/cotizaciones", label: "Cotizaciones" },
+            { href: "/pedidos", label: "Pedidos" },
+            { href: "/cotizaciones/nueva", label: "Nueva" },
           ]}
           usuario={usuario}
         />

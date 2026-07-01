@@ -81,6 +81,48 @@ export async function getPedidosContable(
   return { pedidos, total: count ?? 0 };
 }
 
+/** Pedidos del vendedor actual (recientes primero, paginados). */
+export async function getMisPedidos(
+  pagina = 1,
+  porPagina = 20,
+): Promise<{ pedidos: PedidoFila[]; total: number }> {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const desde = (Math.max(1, pagina) - 1) * porPagina;
+
+  const { data, error, count } = await supabase
+    .from("pedidos")
+    .select("id, estado, wo_order_id, total, created_at, cliente:clientes(nombre), vendedor:profiles(nombre_completo)", {
+      count: "exact",
+    })
+    .eq("vendedor_id", user?.id ?? "")
+    .order("created_at", { ascending: false })
+    .range(desde, desde + porPagina - 1);
+  if (error) throw error;
+
+  type Raw = {
+    id: string;
+    estado: string;
+    wo_order_id: string | null;
+    total: number | string;
+    created_at: string;
+    cliente?: { nombre: string } | { nombre: string }[] | null;
+    vendedor?: { nombre_completo: string } | { nombre_completo: string }[] | null;
+  };
+  const pedidos = ((data ?? []) as unknown as Raw[]).map((row) => ({
+    id: row.id,
+    estado: row.estado,
+    wo_order_id: row.wo_order_id ?? null,
+    total: Number(row.total),
+    created_at: row.created_at,
+    cliente_nombre: unwrap(row.cliente)?.nombre ?? "—",
+    vendedor_nombre: unwrap(row.vendedor)?.nombre_completo ?? "—",
+  }));
+  return { pedidos, total: count ?? 0 };
+}
+
 export interface PedidoDetalle {
   id: string;
   estado: string;
