@@ -31,8 +31,10 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isAuthRoute = path.startsWith("/login");
+  // El canal de WhatsApp se autentica con token propio (no sesión).
+  const isPublicApi = path.startsWith("/api/whatsapp");
 
-  if (!user && !isAuthRoute) {
+  if (!user && !isAuthRoute && !isPublicApi) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

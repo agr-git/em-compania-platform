@@ -1,0 +1,52 @@
+{
+  "edges": [
+    {
+      "label": "next",
+      "source": "start",
+      "target": "asesor"
+    }
+  ],
+  "nodes": [
+    {
+      "data": {
+        "config": {},
+        "node_type": "start"
+      },
+      "id": "start",
+      "position": {
+        "x": 100,
+        "y": 100
+      },
+      "type": "flow-node"
+    },
+    {
+      "data": {
+        "config": {
+          "flow_agent_webhooks": [
+            {
+              "description": "Crea una cotización borrador con los productos solicitados. items: [{consulta, cantidad}].",
+              "headers": {
+                "Authorization": "Bearer {{vars.ingest_token}}",
+                "Content-Type": "application/json"
+              },
+              "method": "POST",
+              "name": "crear_cotizacion",
+              "url": "https://em-compania-platform.vercel.app/api/whatsapp/pedido"
+            }
+          ],
+          "max_iterations": 8,
+          "provider_model_name": "b3a5b171-3c2b-413a-a9d9-3e3c3609982b",
+          "system_prompt": "Eres el asistente de pedidos de E.M. Compañía (sellos mecánicos, capacitores y refrigeración). Saluda breve y pide al cliente qué productos necesita si no lo dijo. Cuando tengas la lista, llama a la herramienta `crear_cotizacion` con `items`: un arreglo de objetos { consulta, cantidad }, donde `consulta` es la descripción o el código del producto (ej. 'sello 7/8', 'capacitor 40 microfaradios', '0100178') y `cantidad` es un número. Incluye también el `telefono` del cliente si lo conoces. Luego confirma al cliente el total y las líneas de la cotización creada, y avísale que un vendedor la revisará. Si algún producto no se encontró, díselo y ofrécele alternativas. Responde siempre en español, claro y cordial.",
+          "temperature": 0.2
+        },
+        "node_type": "agent"
+      },
+      "id": "asesor",
+      "position": {
+        "x": 240,
+        "y": 0
+      },
+      "type": "flow-node"
+    }
+  ]
+}
