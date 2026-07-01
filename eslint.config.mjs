@@ -22,6 +22,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Tooling externo (skills de Kapso, proyecto Kapso) — no es código del producto.
+    ".agents/**",
+    ".claude/**",
+    "kapso/**",
   ]),
 ]);
 

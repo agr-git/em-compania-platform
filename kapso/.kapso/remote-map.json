@@ -1,0 +1,21 @@
+{
+  "functions": {},
+  "version": 1,
+  "workflows": {
+    "whatsapp-pedidos": {
+      "files": {
+        "workflows/whatsapp-pedidos/definition.json": "29937ae70b08ee59a84a0c80eae593b8ce7de85809aa2c4e94624f072a396e1d",
+        "workflows/whatsapp-pedidos/workflow.yaml": "e11e91c2372843c72777a39489a618c3897a82561f78f931eb90e81bf2344223"
+      },
+      "id": "ed706995-8d2f-4d05-9669-0bc66460d7fa",
+      "lockVersion": 2,
+      "slug": "whatsapp-pedidos",
+      "sourceFile": {
+        "hash": "5d5885181238f1dc308ad034bf183e58a2355c44e5058c4d628115072c9c12f7",
+        "path": "workflows/whatsapp-pedidos/workflow.ts"
+      },
+      "status": "draft",
+      "updatedAt": "2026-07-01T01:27:02-04:00"
+    }
+  }
+}

@@ -35,7 +35,6 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- hidratación única desde localStorage al montar
     setItems(inicial);
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- marca de "listo" tras hidratar
     setListo(true);
   }, []);
 

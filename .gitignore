@@ -42,3 +42,10 @@ test-results/
 
 # artefactos de research (firecrawl dumps)
 .firecrawl/
+
+# tooling Kapso (skills de dev + deps del workflow)
+.agents/
+.claude/skills/
+skills-lock.json
+kapso/node_modules/
+kapso/package-lock.json
