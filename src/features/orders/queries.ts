@@ -32,16 +32,31 @@ export interface PedidoFila {
   vendedor_nombre: string;
 }
 
-/** Todos los pedidos (recientes primero), opcionalmente filtrados por vendedor. Solo contable/admin (RLS). */
-export async function getPedidosContable(vendedorId?: string): Promise<PedidoFila[]> {
+export interface PaginaPedidos {
+  pedidos: PedidoFila[];
+  total: number;
+}
+
+/** Pedidos (recientes primero), filtrables por vendedor y paginados. Solo contable/admin (RLS). */
+export async function getPedidosContable(
+  vendedorId?: string,
+  pagina = 1,
+  porPagina = 20,
+): Promise<PaginaPedidos> {
   const supabase = await createSupabaseServerClient();
+  const desde = (Math.max(1, pagina) - 1) * porPagina;
+
   let query = supabase
     .from("pedidos")
-    .select("id, estado, wo_order_id, total, created_at, cliente:clientes(nombre), vendedor:profiles(nombre_completo)")
-    .order("created_at", { ascending: false });
+    .select(
+      "id, estado, wo_order_id, total, created_at, cliente:clientes(nombre), vendedor:profiles(nombre_completo)",
+      { count: "exact" },
+    )
+    .order("created_at", { ascending: false })
+    .range(desde, desde + porPagina - 1);
   if (vendedorId) query = query.eq("vendedor_id", vendedorId);
 
-  const { data, error } = await query;
+  const { data, error, count } = await query;
   if (error) throw error;
 
   type Raw = {
@@ -54,7 +69,7 @@ export async function getPedidosContable(vendedorId?: string): Promise<PedidoFil
     vendedor?: { nombre_completo: string } | { nombre_completo: string }[] | null;
   };
 
-  return ((data ?? []) as unknown as Raw[]).map((row) => ({
+  const pedidos = ((data ?? []) as unknown as Raw[]).map((row) => ({
     id: row.id,
     estado: row.estado,
     wo_order_id: row.wo_order_id ?? null,
@@ -63,6 +78,7 @@ export async function getPedidosContable(vendedorId?: string): Promise<PedidoFil
     cliente_nombre: unwrap(row.cliente)?.nombre ?? "—",
     vendedor_nombre: unwrap(row.vendedor)?.nombre_completo ?? "—",
   }));
+  return { pedidos, total: count ?? 0 };
 }
 
 export interface PedidoDetalle {

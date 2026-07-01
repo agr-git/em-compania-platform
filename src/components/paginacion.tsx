@@ -2,14 +2,17 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+/** Paginación compartida (catálogo, pedidos…). Estado en la URL (?pagina). */
 export function Paginacion({
   pagina,
   porPagina,
   total,
+  etiqueta = "resultados",
 }: {
   pagina: number;
   porPagina: number;
   total: number;
+  etiqueta?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -31,7 +34,7 @@ export function Paginacion({
   return (
     <div className="flex items-center justify-between gap-3 text-sm">
       <span className="text-neutral-500">
-        Página {pagina} de {paginas} · {total} productos
+        Página {pagina} de {paginas} · {total} {etiqueta}
       </span>
       <div className="flex gap-2">
         <button type="button" disabled={pagina <= 1} onClick={() => ir(pagina - 1)} className={btn}>
