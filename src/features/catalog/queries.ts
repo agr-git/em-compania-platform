@@ -10,6 +10,7 @@ export async function getMasVendidos(limite = 8): Promise<ProductoVendido[]> {
     ...r,
     precio_lista: Number(r.precio_lista),
     vendido: Number(r.vendido),
+    cantidad_disponible: Number(r.cantidad_disponible),
   }));
 }
 

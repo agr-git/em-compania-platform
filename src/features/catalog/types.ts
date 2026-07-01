@@ -22,6 +22,7 @@ export interface ProductoVendido {
   categoria: string;
   precio_lista: number;
   vendido: number;
+  cantidad_disponible: number;
 }
 
 /** Metadatos de cada familia del catálogo (color de marca + etiqueta). */
