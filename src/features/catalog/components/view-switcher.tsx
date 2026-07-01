@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 const OPCIONES = [
   { v: "tabla", label: "Tabla" },
   { v: "rejilla", label: "Rejilla" },
-  // { v: "indice", label: "Índice" }, // se habilita en el siguiente PR
+  { v: "indice", label: "Índice" },
 ];
 
 export function ViewSwitcher({ actual }: { actual: string }) {

@@ -1,3 +1,4 @@
+import { IndiceEditorial } from "@/features/catalog/components/indice-editorial";
 import { Paginacion } from "@/features/catalog/components/paginacion";
 import { RejillaFichas } from "@/features/catalog/components/rejilla-fichas";
 import { ResultsTable } from "@/features/catalog/components/results-table";
@@ -14,7 +15,9 @@ export default async function CatalogoPage({
 }) {
   const { q = "", vista = "tabla", pagina: paginaStr } = await searchParams;
   const pagina = Math.max(1, Number(paginaStr) || 1);
-  const { productos, total } = await buscarProductos(q, pagina, POR_PAGINA);
+  const esIndice = vista === "indice";
+  // El índice muestra todo agrupado por familia (sin paginar); el resto pagina.
+  const { productos, total } = await buscarProductos(q, esIndice ? 1 : pagina, esIndice ? 500 : POR_PAGINA);
 
   return (
     <div className="flex flex-col gap-5">
@@ -34,13 +37,15 @@ export default async function CatalogoPage({
         <ViewSwitcher actual={vista} />
       </div>
 
-      {vista === "rejilla" ? (
+      {esIndice ? (
+        <IndiceEditorial productos={productos} />
+      ) : vista === "rejilla" ? (
         <RejillaFichas productos={productos} />
       ) : (
         <ResultsTable productos={productos} />
       )}
 
-      <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={total} />
+      {!esIndice && <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={total} />}
     </div>
   );
 }
