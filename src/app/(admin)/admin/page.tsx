@@ -22,8 +22,8 @@ export default async function AdminPage() {
 
       <CrearUsuarioForm />
 
-      <div className="overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500 dark:bg-neutral-900">
             <tr>
               <th className="px-3 py-2 font-medium">Nombre</th>

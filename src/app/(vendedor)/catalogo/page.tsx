@@ -1,5 +1,5 @@
 import { IndiceEditorial } from "@/features/catalog/components/indice-editorial";
-import { Paginacion } from "@/features/catalog/components/paginacion";
+import { Paginacion } from "@/components/paginacion";
 import { RejillaFichas } from "@/features/catalog/components/rejilla-fichas";
 import { ResultsTable } from "@/features/catalog/components/results-table";
 import { SearchBox } from "@/features/catalog/components/search-box";
@@ -45,7 +45,9 @@ export default async function CatalogoPage({
         <ResultsTable productos={productos} />
       )}
 
-      {!esIndice && <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={total} />}
+      {!esIndice && (
+        <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={total} etiqueta="productos" />
+      )}
     </div>
   );
 }

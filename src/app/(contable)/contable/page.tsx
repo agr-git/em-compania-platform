@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { Paginacion } from "@/components/paginacion";
 import { facturarPedido } from "@/features/orders/actions";
 import { FiltroVendedor } from "@/features/orders/components/filtro-vendedor";
 import { PedidosRealtime } from "@/features/orders/components/pedidos-realtime";
 import { getPedidosContable, getVendedores } from "@/features/orders/queries";
 import { formatCOP } from "@/lib/format";
+
+const POR_PAGINA = 20;
 
 const ESTADO: Record<string, { texto: string; clase: string }> = {
   creado: { texto: "Creado", clase: "bg-neutral-100 text-neutral-700" },
@@ -17,11 +20,12 @@ const fechaFmt = new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeSty
 export default async function ContablePage({
   searchParams,
 }: {
-  searchParams: Promise<{ vendedor?: string }>;
+  searchParams: Promise<{ vendedor?: string; pagina?: string }>;
 }) {
-  const { vendedor = "" } = await searchParams;
-  const [pedidos, vendedores] = await Promise.all([
-    getPedidosContable(vendedor || undefined),
+  const { vendedor = "", pagina: paginaStr } = await searchParams;
+  const pagina = Math.max(1, Number(paginaStr) || 1);
+  const [{ pedidos, total }, vendedores] = await Promise.all([
+    getPedidosContable(vendedor || undefined, pagina, POR_PAGINA),
     getVendedores(),
   ]);
 
@@ -29,18 +33,18 @@ export default async function ContablePage({
     <div className="flex flex-col gap-5">
       <PedidosRealtime />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold tracking-tight">Pedidos</h1>
           <p className="text-sm text-neutral-500">
-            En tiempo real · recientes primero · {pedidos.length} pedido(s)
+            En tiempo real · recientes primero · {total} pedido(s)
           </p>
         </div>
         <FiltroVendedor vendedores={vendedores} actual={vendedor} />
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
+        <table className="w-full min-w-[720px] text-left text-sm">
           <thead className="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500 dark:bg-neutral-900">
             <tr>
               <th className="px-3 py-2 font-medium">Fecha</th>
@@ -97,6 +101,8 @@ export default async function ContablePage({
           </tbody>
         </table>
       </div>
+
+      <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={total} etiqueta="pedidos" />
     </div>
   );
 }
