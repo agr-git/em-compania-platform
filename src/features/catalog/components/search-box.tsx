@@ -21,6 +21,7 @@ export function SearchBox({ defaultValue }: { defaultValue: string }) {
       const params = new URLSearchParams(searchParams);
       if (value.trim()) params.set("q", value);
       else params.delete("q");
+      params.delete("pagina"); // nueva búsqueda → volver a la página 1
       startTransition(() => router.replace(`${pathname}?${params.toString()}`));
     }, 250);
     return () => clearTimeout(t);

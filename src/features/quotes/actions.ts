@@ -9,7 +9,8 @@ import { crearCotizacionSchema, type CrearCotizacionInput } from "./schema";
 
 /** Búsqueda de productos para el armador de cotización (reutiliza el catálogo). */
 export async function buscarProductosAction(q: string): Promise<ProductoBusqueda[]> {
-  return buscarProductos(q);
+  const { productos } = await buscarProductos(q, 1, 8);
+  return productos;
 }
 
 export async function crearCotizacion(input: CrearCotizacionInput) {

@@ -1,14 +1,20 @@
+import { Paginacion } from "@/features/catalog/components/paginacion";
+import { RejillaFichas } from "@/features/catalog/components/rejilla-fichas";
 import { ResultsTable } from "@/features/catalog/components/results-table";
 import { SearchBox } from "@/features/catalog/components/search-box";
+import { ViewSwitcher } from "@/features/catalog/components/view-switcher";
 import { buscarProductos } from "@/features/catalog/queries";
+
+const POR_PAGINA = 24;
 
 export default async function CatalogoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; vista?: string; pagina?: string }>;
 }) {
-  const { q = "" } = await searchParams;
-  const productos = await buscarProductos(q);
+  const { q = "", vista = "tabla", pagina: paginaStr } = await searchParams;
+  const pagina = Math.max(1, Number(paginaStr) || 1);
+  const { productos, total } = await buscarProductos(q, pagina, POR_PAGINA);
 
   return (
     <div className="flex flex-col gap-5">
@@ -21,12 +27,20 @@ export default async function CatalogoPage({
 
       <SearchBox defaultValue={q} />
 
-      <div className="flex items-center justify-between text-xs text-neutral-400">
-        <span>{productos.length} resultado(s)</span>
-        {q && <span>término: “{q}”</span>}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-xs text-neutral-400">
+          {total} resultado(s){q && ` · término: “${q}”`}
+        </span>
+        <ViewSwitcher actual={vista} />
       </div>
 
-      <ResultsTable productos={productos} />
+      {vista === "rejilla" ? (
+        <RejillaFichas productos={productos} />
+      ) : (
+        <ResultsTable productos={productos} />
+      )}
+
+      <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={total} />
     </div>
   );
 }
