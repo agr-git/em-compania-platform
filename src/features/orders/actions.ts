@@ -256,7 +256,13 @@ export async function reintentarEnvioWO(pedidoId: string): Promise<ConvertirResu
  * contabilizar → facturar electrónicamente (la API rechaza facturar sin
  * contabilizar: DOCUMENTO_NO_CONTABILIZADO). En el concurso lo simula el mock.
  */
-export async function facturarPedido(pedidoId: string) {
+export interface FacturarResultado {
+  ok?: boolean;
+  cufe?: string;
+  error?: string;
+}
+
+export async function facturarPedido(pedidoId: string): Promise<FacturarResultado> {
   const user = await requireRol("contable", "administrador");
   const supabase = await createSupabaseServerClient();
 
@@ -265,27 +271,30 @@ export async function facturarPedido(pedidoId: string) {
     .select("id, wo_order_id, estado")
     .eq("id", pedidoId)
     .maybeSingle();
-  if (!pedido || !pedido.wo_order_id) throw new Error("El pedido no está en World Office.");
+  if (!pedido || !pedido.wo_order_id) return { error: "El pedido no está en World Office." };
   if (pedido.estado === "facturado") {
     revalidatePath("/contable");
-    return;
+    return { ok: true, cufe: "ya-facturado" };
   }
 
   const { worldOffice } = getContainer();
-  await worldOffice.contabilizarDocumento(pedido.wo_order_id as string);
-  const factura = await worldOffice.facturarElectronico(pedido.wo_order_id as string);
+  try {
+    await worldOffice.contabilizarDocumento(pedido.wo_order_id as string);
+    const factura = await worldOffice.facturarElectronico(pedido.wo_order_id as string);
 
-  // El contable puede UPDATE pedidos (RLS pedidos_contable_update).
-  const { error } = await supabase.from("pedidos").update({ estado: "facturado" }).eq("id", pedidoId);
-  if (error) throw error;
+    const { error } = await supabase.from("pedidos").update({ estado: "facturado" }).eq("id", pedidoId);
+    if (error) return { error: "No se pudo actualizar el estado del pedido." };
 
-  await supabase.from("audit_log").insert({
-    actor_id: user.id,
-    accion: "facturar",
-    entidad: "pedido",
-    entidad_id: pedidoId,
-    payload: { cufe: factura.cufe },
-  });
+    await supabase.from("audit_log").insert({
+      actor_id: user.id,
+      accion: "facturar",
+      entidad: "pedido",
+      entidad_id: pedidoId,
+      payload: { cufe: factura.cufe },
+    });
 
-  revalidatePath("/contable");
+    return { ok: true, cufe: factura.cufe };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Error al facturar en World Office." };
+  }
 }

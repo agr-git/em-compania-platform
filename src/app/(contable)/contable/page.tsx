@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Paginacion } from "@/components/paginacion";
-import { facturarPedido } from "@/features/orders/actions";
+import { FacturarPedidoBoton, FacturaExitoBanner } from "@/features/orders/components/facturar-pedido-boton";
 import { FiltroVendedor } from "@/features/orders/components/filtro-vendedor";
 import { PedidosRealtime } from "@/features/orders/components/pedidos-realtime";
 import { getPedidosContable, getVendedores } from "@/features/orders/queries";
@@ -20,9 +20,9 @@ const fechaFmt = new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeSty
 export default async function ContablePage({
   searchParams,
 }: {
-  searchParams: Promise<{ vendedor?: string; pagina?: string }>;
+  searchParams: Promise<{ vendedor?: string; pagina?: string; facturado?: string }>;
 }) {
-  const { vendedor = "", pagina: paginaStr } = await searchParams;
+  const { vendedor = "", pagina: paginaStr, facturado } = await searchParams;
   const pagina = Math.max(1, Number(paginaStr) || 1);
   const [{ pedidos, total }, vendedores] = await Promise.all([
     getPedidosContable(vendedor || undefined, pagina, POR_PAGINA),
@@ -32,6 +32,8 @@ export default async function ContablePage({
   return (
     <div className="flex flex-col gap-5">
       <PedidosRealtime />
+
+      {facturado && <FacturaExitoBanner woOrderId={facturado} />}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
@@ -73,18 +75,11 @@ export default async function ContablePage({
                   </td>
                   <td className="px-3 py-2 text-right">
                     <div className="flex items-center justify-end gap-3">
-                      <Link href={`/pedidos/${p.id}`} className="text-xs text-neutral-500 hover:underline">
+                      <Link href={`/contable/pedidos/${p.id}`} className="text-xs text-neutral-500 hover:underline">
                         Ver
                       </Link>
                       {p.estado === "enviado_wo" && (
-                        <form action={facturarPedido.bind(null, p.id)}>
-                          <button
-                            type="submit"
-                            className="btn-funky px-3 py-1.5 text-xs"
-                          >
-                            Convertir en factura
-                          </button>
-                        </form>
+                        <FacturarPedidoBoton pedidoId={p.id} woOrderId={p.wo_order_id ?? ""} />
                       )}
                     </div>
                   </td>

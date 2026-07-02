@@ -26,13 +26,16 @@ export function PedidosRealtime() {
       channel = supabase
         .channel("pedidos-contable")
         .on("postgres_changes", { event: "*", schema: "public", table: "pedidos" }, () => {
+          if ((window as unknown as Record<string, number>).__facturaSuppressUntil > Date.now()) return;
           router.refresh();
         })
         .subscribe();
     })();
 
-    // Fallback de liveness.
-    const intervalo = setInterval(() => router.refresh(), 10000);
+    const intervalo = setInterval(() => {
+      if ((window as unknown as Record<string, number>).__facturaSuppressUntil > Date.now()) return;
+      router.refresh();
+    }, 10000);
 
     return () => {
       clearInterval(intervalo);
