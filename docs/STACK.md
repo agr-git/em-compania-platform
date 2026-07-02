@@ -17,7 +17,7 @@ práctico.
 |------|------------|---------|
 | Framework | **Next.js 16** (App Router, RSC, Server Actions) · ver ADR-0003 | Fullstack en un repo, SSR para paneles rápidos, despliegue nativo en Vercel, ecosistema enorme, excelente para Claude Code |
 | Lenguaje | **TypeScript** estricto | Tipos de extremo a extremo; menos bugs en datos contables |
-| UI | **Tailwind CSS + shadcn/ui** | Componentes accesibles, consistentes y rápidos de iterar |
+| UI | **Tailwind CSS** + componentes propios (`components/ui`) · shadcn/ui _(previsto)_ | Componentes accesibles, consistentes y rápidos de iterar |
 | Datos | **Supabase (Postgres)** | SQL real, relaciones, transacciones; ideal para pedidos/contabilidad |
 | Auth | **Supabase Auth** | 3 roles vía RLS, sin construir auth desde cero |
 | Realtime | **Supabase Realtime** | El panel contable ve pedidos en vivo sin polling |
@@ -25,9 +25,9 @@ práctico.
 | Hosting | **Vercel** | En cuenta del cliente; CI/CD por git push |
 | Email | **Gmail API** (prod) / mock (concurso) | Requerido por el cliente; aislado tras `NotificationPort` |
 | Validación | **Zod** | Un esquema = tipos + validación en todos los bordes |
-| Estado cliente | **TanStack Query** | Cache + sincronización donde hay realtime |
-| Tests | **Vitest + Playwright** | Unit del dominio + e2e de los flujos críticos |
-| Calidad | **ESLint · Prettier · Husky · lint-staged** | Estilo y checks automáticos en cada commit |
+| Estado cliente | Server Components + `supabase-js` · **TanStack Query** _(previsto)_ | Cache + sincronización donde hay realtime |
+| Tests | **Vitest** (hoy) · Playwright _(previsto)_ | Unit del dominio + e2e de los flujos críticos |
+| Calidad | **ESLint** (hoy) · Prettier · Husky · lint-staged _(previstos)_ | Estilo y checks automáticos en cada commit |
 | Gestor | **pnpm** | Rápido y eficiente en disco |
 
 ## ¿Por qué Next.js + Supabase y no un no-code (Lovable)?

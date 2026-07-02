@@ -32,15 +32,19 @@ de World Office** (ver `docs/WORLD-OFFICE-INTEGRATION.md`).
 
 ## 3. Stack (decidido — ver `docs/STACK.md` y ADR-0002)
 
+> **Instalado hoy** vs. _(previsto)_: lo marcado _(previsto)_ es una decisión ya tomada
+> pero **aún no cableada** en el repo; se suma cuando aporte. Regla del repo: doc
+> desactualizado = bug, así que aquí no se promete lo que todavía no corre.
+
 - **Framework:** Next.js 16 (App Router, RSC, Server Actions) + TypeScript estricto + React 19 · ver ADR-0003
-- **UI:** Tailwind CSS + shadcn/ui
-- **Datos/Auth/Realtime:** Supabase (Postgres + Auth + RLS + Realtime + Storage)
+- **UI:** Tailwind CSS + componentes propios en `components/ui` _(shadcn/ui: previsto)_
+- **Datos/Auth/Realtime:** Supabase (Postgres + Auth + RLS + Realtime, vía `supabase-js`)
 - **Hosting:** Vercel (cuenta del cliente) + Supabase Cloud
 - **Email:** Gmail API en producción / mock en concurso (detrás de `NotificationPort`)
 - **Validación:** Zod en todos los bordes (forms, server actions, API)
-- **Estado servidor en cliente:** TanStack Query donde haya realtime + cache
-- **Tests:** Vitest (unit) + Playwright (e2e de los flujos críticos)
-- **Tooling:** pnpm · ESLint · Prettier · Husky + lint-staged
+- **Estado servidor en cliente:** Server Components + `supabase-js` _(TanStack Query: previsto para cache + realtime)_
+- **Tests:** Vitest (unit del dominio) _(Playwright e2e: previsto)_
+- **Tooling:** pnpm · ESLint _(Prettier · Husky · lint-staged: previsto)_
 
 ## 4. Arquitectura en una frase
 
