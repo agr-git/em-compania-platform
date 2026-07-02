@@ -31,8 +31,9 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isAuthRoute = path.startsWith("/login");
-  // El canal de WhatsApp se autentica con token propio (no sesión).
-  const isPublicApi = path.startsWith("/api/whatsapp");
+  // El canal de WhatsApp se autentica con token propio (no sesión). El catálogo
+  // en PDF es público de solo-lectura: lo descarga el agente de WhatsApp (Kapso).
+  const isPublicApi = path.startsWith("/api/whatsapp") || path.startsWith("/api/catalogo") || path.startsWith("/api/cron");
   // Cotización pública compartible: el share_token de la URL es la llave de acceso.
   const isPublicQuote = path.startsWith("/c/");
 

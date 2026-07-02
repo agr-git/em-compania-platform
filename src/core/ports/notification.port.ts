@@ -5,14 +5,28 @@
 
 export interface NotificacionPedidoNuevo {
   tipo: "pedido_nuevo";
-  destinatario: string; // correo del contable
+  destinatario: string;
   pedidoId: string;
   vendedor: string;
   cliente: string;
   total: number;
 }
 
-export type Notificacion = NotificacionPedidoNuevo;
+export interface NotificacionDigestoSemanal {
+  tipo: "digesto_semanal";
+  destinatario: string;
+  periodo: string;
+  totalPedidos: number;
+  pedidosFacturados: number;
+  pedidosPendientes: number;
+  pedidosError: number;
+  ingresoTotal: number;
+  ingresoFacturado: number;
+  topVendedores: { nombre: string; pedidos: number; ingreso: number }[];
+  pedidosAtencionUrgente: { id: string; cliente: string; estado: string; antiguedadDias: number }[];
+}
+
+export type Notificacion = NotificacionPedidoNuevo | NotificacionDigestoSemanal;
 
 export interface ResultadoNotificacion {
   enviada: boolean;
