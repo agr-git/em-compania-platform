@@ -148,6 +148,7 @@ pnpm db:seed        # cargar catálogo de muestra (IA)
 | `docs/ARCHITECTURE.md` | Arquitectura hexagonal, capas, flujo de datos |
 | `docs/DATA-MODEL.md` | Esquema de base de datos y RLS |
 | `docs/WORLD-OFFICE-INTEGRATION.md` | ⭐ Plan de integración API (lo que más pesa) |
+| `docs/WHATSAPP.md` | Canal de pedidos por WhatsApp (Kapso) — extra vendible |
 | `docs/CATALOG-GENERATION.md` | Cómo generamos el catálogo de muestra con IA |
 | `docs/ROADMAP.md` | Fases del concurso + ideas a futuro para el cliente |
 | `docs/onboarding/MANUAL-ONBOARDING.md` | Manual para usuario no técnico |
