@@ -56,7 +56,7 @@ export default async function AdminPage() {
                   <form action={setUsuarioActivo.bind(null, u.id, !u.activo)}>
                     <button
                       type="submit"
-                      className="rounded-md border border-neutral-300 px-3 py-1 text-xs font-medium hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900"
+                      className="rounded-md border border-neutral-300 px-3 py-1 text-xs font-medium hover:bg-neutral-100 active:scale-95 transition-transform dark:border-neutral-700 dark:hover:bg-neutral-900"
                     >
                       {u.activo ? "Desactivar" : "Activar"}
                     </button>

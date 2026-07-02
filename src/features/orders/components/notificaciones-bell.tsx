@@ -90,7 +90,7 @@ export function NotificacionesBell() {
         type="button"
         onClick={toggle}
         aria-label={`Notificaciones${noLeidas ? `: ${noLeidas} sin leer` : ""}`}
-        className="relative grid size-8 place-items-center rounded-md border border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900"
+        className="relative grid size-8 place-items-center rounded-md border border-neutral-300 hover:bg-neutral-100 active:scale-90 transition-transform dark:border-neutral-700 dark:hover:bg-neutral-900"
       >
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" strokeLinecap="round" strokeLinejoin="round" />
@@ -111,7 +111,7 @@ export function NotificacionesBell() {
             className="fixed inset-0 z-20 cursor-default"
             onClick={() => setAbierto(false)}
           />
-          <div className="card-funky absolute right-0 z-30 mt-2 flex w-80 max-w-[90vw] flex-col overflow-hidden">
+          <div className="card-funky fixed right-2 left-2 z-30 mt-2 flex flex-col overflow-hidden sm:absolute sm:left-auto sm:right-0 sm:w-80">
             <div className="border-b border-brand-border bg-brand-surface px-4 py-2 text-sm font-semibold">
               Pedidos recientes
             </div>
@@ -122,9 +122,9 @@ export function NotificacionesBell() {
               {items.map((n) => (
                 <li key={n.id} className={n.leida ? "" : "bg-brand-primary/5"}>
                   <Link
-                    href={`/pedidos/${n.pedido_id}`}
+                    href={`/contable/pedidos/${n.pedido_id}`}
                     onClick={() => setAbierto(false)}
-                    className="block px-4 py-2.5 text-sm hover:bg-neutral-50"
+                    className="nav-item-active block px-4 py-2.5 text-sm hover:bg-neutral-50"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-medium text-neutral-900">{n.cliente_nombre}</span>

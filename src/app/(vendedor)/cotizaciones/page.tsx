@@ -51,7 +51,7 @@ export default async function MisCotizacionesPage({
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">{formatCOP(c.total)}</td>
                   <td className="px-3 py-2 text-right">
-                    <Link href={`/cotizaciones/${c.id}`} className="text-xs text-brand-blue hover:underline">
+                    <Link href={`/cotizaciones/${c.id}`} className="text-xs text-brand-blue hover:underline active:opacity-50 transition-opacity">
                       Ver
                     </Link>
                   </td>

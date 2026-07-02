@@ -4,18 +4,22 @@
   "workflows": {
     "whatsapp-pedidos": {
       "files": {
-        "workflows/whatsapp-pedidos/definition.json": "29937ae70b08ee59a84a0c80eae593b8ce7de85809aa2c4e94624f072a396e1d",
+        "workflows/whatsapp-pedidos/definition.json": "46bdfd14687c4f64136a43c0fd10bfb4f4e4f195931e8906ee2c2182be06e008",
         "workflows/whatsapp-pedidos/workflow.yaml": "b1ef0eee9e0f50efbc0f46d29f6144c43def0d67a83a0739a1a5b5e90c3c68ce"
       },
+      "generatedSource": {
+        "hash": "0ea9b9a59f3a9618e19a2ef90230ac0615d3b975f4cd1ea27c46c213ad6cc28e",
+        "path": "workflows/whatsapp-pedidos/workflow.js"
+      },
       "id": "ed706995-8d2f-4d05-9669-0bc66460d7fa",
-      "lockVersion": 2,
+      "lockVersion": 7,
       "slug": "whatsapp-pedidos",
       "sourceFile": {
-        "hash": "9857dbdf8d5acb126276d13f0537df5439086af80b950cb66439c75ff70205b7",
+        "hash": "222731327e783492e702c333d606a69a1db85a27ee2bc62872bc9bba869a6bc3",
         "path": "workflows/whatsapp-pedidos/workflow.ts"
       },
-      "status": "draft",
-      "updatedAt": "2026-07-01T01:27:02-04:00"
+      "status": "active",
+      "updatedAt": "2026-07-01T08:18:57-04:00"
     }
   }
 }

@@ -108,6 +108,35 @@
     box-shadow: var(--shadow-funky-sm);
   }
 
+  /* Botón secundario (borde neutral, sin relleno). Feedback `:active` consistente. */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--brand-border);
+    background: transparent;
+    font-weight: 500;
+    transition:
+      transform 0.06s ease,
+      background 0.06s ease,
+      box-shadow 0.06s ease;
+  }
+  .btn-secondary:hover {
+    background: var(--brand-surface);
+  }
+  .btn-secondary:active {
+    transform: scale(0.95);
+    background: var(--brand-border);
+  }
+
+  /* Active feedback para links/items de menú y nav */
+  .nav-item-active:active {
+    transform: scale(0.96);
+    opacity: 0.7;
+  }
+
   /* Card firma: esquinas redondeadas, borde tinta, sombra dura. */
   .card-funky {
     border-radius: var(--radius-card);

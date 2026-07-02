@@ -76,13 +76,18 @@ export function QuoteBuilder({ clientes: clientesIniciales }: { clientes: Client
   function cambiarCliente(id: string) {
     setClienteId(id);
     const desc = clientes.find((c) => c.id === id)?.descuento_default ?? 0;
-    // Los descuentos de las líneas eran del cliente anterior: se re-aplican los del nuevo.
     setDescuentoGlobal(desc);
+    setDescuentoInput(String(desc));
     setLineas((prev) => prev.map((l) => ({ ...l, descuento_pct: desc })));
   }
 
-  function aplicarDescuentoGlobal(valor: number) {
-    const desc = Math.min(100, Math.max(0, valor));
+  const [descuentoInput, setDescuentoInput] = useState(String(descuentoCliente));
+
+  function aplicarDescuentoGlobal(raw: string) {
+    setDescuentoInput(raw);
+    const num = raw === "" ? 0 : Number(raw);
+    if (Number.isNaN(num)) return;
+    const desc = Math.min(100, Math.max(0, num));
     setDescuentoGlobal(desc);
     setLineas((prev) => prev.map((l) => ({ ...l, descuento_pct: desc })));
   }
@@ -129,6 +134,7 @@ export function QuoteBuilder({ clientes: clientesIniciales }: { clientes: Client
       setClientes((prev) => [...prev, c].sort((a, b) => a.nombre.localeCompare(b.nombre)));
       setClienteId(c.id);
       setDescuentoGlobal(c.descuento_default);
+      setDescuentoInput(String(c.descuento_default));
       setLineas((prev) => prev.map((l) => ({ ...l, descuento_pct: c.descuento_default })));
       setNuevoCliente({ nombre: "", nit: "", descuento: "0" });
       setMostrarNuevoCliente(false);
@@ -186,15 +192,16 @@ export function QuoteBuilder({ clientes: clientesIniciales }: { clientes: Client
             min={0}
             max={100}
             step="0.5"
-            value={descuentoGlobal}
-            onChange={(e) => aplicarDescuentoGlobal(Number(e.target.value) || 0)}
+            value={descuentoInput}
+            onChange={(e) => aplicarDescuentoGlobal(e.target.value)}
+            onBlur={() => setDescuentoInput(String(descuentoGlobal))}
             className={`${inputCls} w-28 text-right`}
           />
         </label>
         <button
           type="button"
           onClick={() => setMostrarNuevoCliente((v) => !v)}
-          className="rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          className="rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-100 active:scale-95 transition-transform dark:border-neutral-700 dark:hover:bg-neutral-800"
         >
           {mostrarNuevoCliente ? "Cancelar" : "+ Nuevo cliente"}
         </button>
@@ -340,7 +347,7 @@ export function QuoteBuilder({ clientes: clientesIniciales }: { clientes: Client
                       <button
                         type="button"
                         onClick={() => eliminar(i)}
-                        className="text-xs text-red-600 hover:underline"
+                        className="text-xs text-red-600 hover:underline active:opacity-50 transition-opacity"
                       >
                         Quitar
                       </button>

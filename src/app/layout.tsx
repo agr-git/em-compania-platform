@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { branding, brandCssVars } from "@/lib/branding";
 import "./globals.css";
@@ -19,6 +19,13 @@ const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   weight: ["400", "600", "800"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export const metadata: Metadata = {
   title: `${branding.legalName} · ${branding.productName}`,
