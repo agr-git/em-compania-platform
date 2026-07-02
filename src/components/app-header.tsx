@@ -12,7 +12,15 @@ export interface NavItem {
  * colapsa en un menú (<details> nativo). El nombre del usuario se oculta en
  * pantallas chicas para no desbordar.
  */
-export function AppHeader({ nav, usuario }: { nav: NavItem[]; usuario: string }) {
+export function AppHeader({
+  nav,
+  usuario,
+  extra,
+}: {
+  nav: NavItem[];
+  usuario: string;
+  extra?: React.ReactNode;
+}) {
   const btn =
     "rounded-md border border-neutral-300 px-3 py-1 text-xs font-medium hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900";
 
@@ -31,6 +39,7 @@ export function AppHeader({ nav, usuario }: { nav: NavItem[]; usuario: string })
         </div>
 
         <div className="flex items-center gap-3">
+          {extra}
           <span className="hidden text-xs text-neutral-500 sm:inline">{usuario}</span>
           <form action={logout}>
             <button type="submit" className={btn}>

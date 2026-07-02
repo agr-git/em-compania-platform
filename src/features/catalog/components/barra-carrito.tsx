@@ -8,10 +8,13 @@ export function BarraCarrito() {
   const { items, limpiar } = useCarrito();
   if (items.length === 0) return null;
 
+  const unidades = items.reduce((acc, i) => acc + i.cantidad, 0);
+
   return (
     <div className="card-funky fixed inset-x-0 bottom-4 z-30 mx-auto flex w-[min(92%,640px)] items-center justify-between gap-3 px-4 py-3">
       <span className="text-sm font-semibold">
-        {items.length} producto{items.length !== 1 ? "s" : ""} en la cotización
+        {items.length} producto{items.length !== 1 ? "s" : ""}
+        {unidades !== items.length ? ` · ${unidades} unidades` : ""} en la cotización
       </span>
       <div className="flex items-center gap-3">
         <button type="button" onClick={limpiar} className="text-xs text-neutral-500 hover:underline">

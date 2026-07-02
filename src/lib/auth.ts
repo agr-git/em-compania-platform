@@ -40,9 +40,14 @@ export function rutaPorRol(rol: Rol | string): string {
 
 /** Lanza si el usuario actual no es administrador. Usar al inicio de acciones admin. */
 export async function requireAdmin(): Promise<PerfilActual> {
+  return requireRol("administrador");
+}
+
+/** Lanza si el usuario actual no tiene alguno de los roles dados. */
+export async function requireRol(...roles: Rol[]): Promise<PerfilActual> {
   const perfil = await getCurrentProfile();
-  if (!perfil || perfil.rol !== "administrador") {
-    throw new Error("Acceso denegado: requiere rol administrador.");
+  if (!perfil || !roles.includes(perfil.rol)) {
+    throw new Error(`Acceso denegado: requiere rol ${roles.join(" o ")}.`);
   }
   return perfil;
 }

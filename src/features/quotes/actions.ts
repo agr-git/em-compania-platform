@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { calcularTotales, totalLinea } from "@/core/domain/cotizacion";
 import { buscarProductos } from "@/features/catalog/queries";
 import type { ProductoBusqueda } from "@/features/catalog/types";
+import { requireRol } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { crearCotizacionSchema, type CrearCotizacionInput } from "./schema";
 
@@ -14,12 +15,9 @@ export async function buscarProductosAction(q: string): Promise<ProductoBusqueda
 }
 
 export async function crearCotizacion(input: CrearCotizacionInput) {
+  const user = await requireRol("vendedor", "administrador");
   const parsed = crearCotizacionSchema.parse(input);
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
 
   // Snapshots congelados desde la BD: jamás se confía en el cliente para precio/código.
   const ids = parsed.lineas.map((l) => l.producto_id);

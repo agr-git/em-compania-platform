@@ -1,5 +1,6 @@
 import { formatCOP } from "@/lib/format";
 import { CATEGORIAS, type ProductoBusqueda } from "../types";
+import { AgregarCarrito } from "./agregar-carrito";
 import { ProductoAvatar } from "./producto-avatar";
 import { StockBadge } from "./stock-badge";
 
@@ -57,6 +58,15 @@ export function IndiceEditorial({ productos }: { productos: ProductoBusqueda[] }
                   <span className="flex shrink-0 items-center gap-3">
                     <span className="tabular-nums">{formatCOP(p.precio_lista)}</span>
                     <StockBadge cantidad={p.cantidad_disponible} />
+                    <AgregarCarrito
+                      agotado={p.cantidad_disponible <= 0}
+                      item={{
+                        producto_id: p.id,
+                        codigo: p.codigo_contable,
+                        descripcion: p.descripcion,
+                        precio_unitario: p.precio_lista,
+                      }}
+                    />
                   </span>
                 </li>
               ))}

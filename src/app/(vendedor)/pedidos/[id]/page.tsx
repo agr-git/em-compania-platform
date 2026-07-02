@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ReintentarWOBoton } from "@/features/orders/components/reintentar-wo-boton";
 import { getPedido } from "@/features/orders/queries";
 import { formatCOP } from "@/lib/format";
 
@@ -48,10 +49,15 @@ export default async function PedidoPage({ params }: { params: Promise<{ id: str
           <div className="text-xs uppercase tracking-wide text-neutral-500">Total</div>
           <div className="mt-1 font-semibold">{formatCOP(pedido.total)}</div>
         </div>
+        {pedido.estado === "error" && (
+          <div className="flex items-end">
+            <ReintentarWOBoton pedidoId={pedido.id} />
+          </div>
+        )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
+        <table className="w-full min-w-[480px] text-left text-sm">
           <thead className="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500 dark:bg-neutral-900">
             <tr>
               <th className="px-3 py-2 font-medium">Código</th>

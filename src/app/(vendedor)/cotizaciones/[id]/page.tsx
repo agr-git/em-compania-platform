@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { convertirEnPedido } from "@/features/orders/actions";
+import { ConvertirPedidoBoton } from "@/features/orders/components/convertir-pedido-boton";
+import { CompartirCotizacion } from "@/features/quotes/components/compartir-cotizacion";
+import { LimpiarCarrito } from "@/features/quotes/components/limpiar-carrito";
 import { getCotizacion } from "@/features/quotes/queries";
 import { formatCOP } from "@/lib/format";
 
@@ -9,10 +11,10 @@ export default async function CotizacionPage({ params }: { params: Promise<{ id:
   const cot = await getCotizacion(id);
   if (!cot) notFound();
 
-  const convertir = convertirEnPedido.bind(null, id);
-
   return (
     <div className="flex flex-col gap-5">
+      {/* Al llegar aquí la cotización quedó persistida → se vacía el carrito. */}
+      <LimpiarCarrito />
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold tracking-tight">Cotización</h1>
@@ -28,19 +30,14 @@ export default async function CotizacionPage({ params }: { params: Promise<{ id:
             Ver pedido →
           </Link>
         ) : (
-          <form action={convertir}>
-            <button
-              type="submit"
-              className="btn-funky px-4 py-2 text-sm"
-            >
-              Convertir en pedido
-            </button>
-          </form>
+          <ConvertirPedidoBoton cotizacionId={id} />
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800">
-        <table className="w-full text-left text-sm">
+      <CompartirCotizacion shareToken={cot.share_token} cliente={cot.cliente_nombre} total={cot.total} />
+
+      <div className="overflow-x-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
+        <table className="w-full min-w-[560px] text-left text-sm">
           <thead className="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500 dark:bg-neutral-900">
             <tr>
               <th className="px-3 py-2 font-medium">Código</th>

@@ -33,8 +33,10 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = path.startsWith("/login");
   // El canal de WhatsApp se autentica con token propio (no sesión).
   const isPublicApi = path.startsWith("/api/whatsapp");
+  // Cotización pública compartible: el share_token de la URL es la llave de acceso.
+  const isPublicQuote = path.startsWith("/c/");
 
-  if (!user && !isAuthRoute && !isPublicApi) {
+  if (!user && !isAuthRoute && !isPublicApi && !isPublicQuote) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

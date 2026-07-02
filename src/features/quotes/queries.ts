@@ -81,6 +81,7 @@ export interface CotizacionDetalle {
   total: number;
   created_at: string;
   cliente_nombre: string;
+  share_token: string;
   items: ItemDetalle[];
   pedido: { id: string; estado: string; wo_order_id: string | null } | null;
 }
@@ -90,7 +91,7 @@ export async function getCotizacion(id: string): Promise<CotizacionDetalle | nul
 
   const { data: cot, error } = await supabase
     .from("cotizaciones")
-    .select("id, estado, subtotal, total, created_at, clientes(nombre)")
+    .select("id, estado, subtotal, total, created_at, share_token, clientes(nombre)")
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
@@ -119,6 +120,7 @@ export async function getCotizacion(id: string): Promise<CotizacionDetalle | nul
     total: Number(cot.total),
     created_at: cot.created_at as string,
     cliente_nombre: cliente?.nombre ?? "—",
+    share_token: cot.share_token as string,
     items: (items ?? []).map((i) => ({
       id: i.id as string,
       codigo_contable_snap: i.codigo_contable_snap as string,
